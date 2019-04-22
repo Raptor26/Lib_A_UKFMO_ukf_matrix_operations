@@ -32,13 +32,13 @@
  *
  * @brief    Функция выполняет инициализацию структуры матрицы
  *
- * @param[out] 	*p_s:		Указатель на структуру, инициализацию 
+ * @param[out] 	*p_s:		Указатель на структуру, инициализацию
  * 							которой необходимо выполнить
  * @param[in] 	rowNumb:	Количество строк матрицы
  * @param[in]  	columnNumb:	Количество столбцов матрицы
- * @param[in] 	*pMatrix:	указатель на область памяти, в 
+ * @param[in] 	*pMatrix:	указатель на область памяти, в
  * 							которой будет размещена матрицы
- * 							
+ *
  * @return  Статус операции
  *                @see ukfmo_fnc_status_e
  */
@@ -79,7 +79,94 @@ UKFMO_MatrixInit(
 	return (UKFMO_OK);
 }
 
+ukfmo_fnc_status_e
+UKFMO_MatrixIdentity(
+#if defined(__UKFMO_USE_ARM_MATH__)
+	#if (__UKFMO_FPT_SIZE__)    == 4
+		arm_matrix_instance_f32 *pSrc_s
+	#elif (__UKFMO_FPT_SIZE__)  == 8
+		arm_matrix_instance_f64 *pSrc_s
+	#endif
+#else
+	ukfmo_matrix_s *pSrc_s
+#endif
+)
+{
+	#if defined(__UKFMO_USE_ARM_MATH__)
+	__UKFMO_FPT__ * const pDst = (__UKFMO_FPT__ *)pSrc_s->pData;
+	const size_t nCol = pSrc_s->numCols;
+	size_t eIdx;
 
+	ukfmo_fnc_status_e status_e = UKFMO_OK;
+	if (pSrc_s->numRows == nCol)
+	{
+		pDst[0] = 1;
+
+		for (eIdx = 1; eIdx < pSrc_s->numRows * pSrc_s->numCols; eIdx++)
+		{
+			const size_t cmpLeft = (size_t)(eIdx / nCol);
+
+			pDst[eIdx] = eIdx < nCol ? 0 : cmpLeft == eIdx % (cmpLeft * nCol) ?  1 : 0;
+		}
+	}
+	else
+	{
+		status_e = UKFMO_SIZE_MISMATCH;
+	}
+
+	#else
+	__UKFMO_FPT__ * const pDst = (__UKFMO_FPT__ *)pSrc_s->pData;
+	const size_t nCol = pSrc_s->columnNumb;
+	size_t eIdx;
+
+	ukfmo_fnc_status_e status_e = UKFMO_OK;
+	if (pSrc_s->rowNumb == nCol)
+	{
+		pDst[0] = 1;
+
+		for (eIdx = 1; eIdx < pSrc_s->rowNumb * pSrc_s->columnNumb; eIdx++)
+		{
+			const size_t cmpLeft = (size_t)(eIdx / nCol);
+
+			pDst[eIdx] = eIdx < nCol ? 0 : cmpLeft == eIdx % (cmpLeft * nCol) ?  1 : 0;
+		}
+	}
+	else
+	{
+		status_e = UKFMO_SIZE_MISMATCH;
+	}
+	#endif
+
+	return (status_e);
+}
+
+ukfmo_fnc_status_e
+UKFMO_MatrixZeros(
+#if defined(__UKFMO_USE_ARM_MATH__)
+	#if (__UKFMO_FPT_SIZE__)    == 4
+		arm_matrix_instance_f32 *pSrc_s
+	#elif (__UKFMO_FPT_SIZE__)  == 8
+		arm_matrix_instance_f64 *pSrc_s
+	#endif
+#else
+	ukfmo_matrix_s *pSrc_s
+#endif
+)
+{
+	#if defined(__UKFMO_USE_ARM_MATH__)
+	memset(
+		(void*) pSrc_s->pData,
+		0,
+		sizeof(__UKFMO_FPT_SIZE__) * pSrc_s->numCols * pSrc_s->numCols);
+	#else
+	memset(
+		(void*) pSrc_s->pData,
+		0,
+		sizeof(__UKFMO_FPT_SIZE__) * pSrc_s->columnNumb * pSrc_s->rowNumb);
+	#endif
+
+	return (UKFMO_OK);
+}
 /*#### |End  | <-- Секция - "Описание глобальных функций" ####################*/
 
 
