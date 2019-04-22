@@ -82,15 +82,15 @@
 typedef enum
 {
 	#if defined(__UKFMO_USE_ARM_MATH__)
-	UKFMO_OK                = ARM_MATH_SUCCESS,
-	UKFMO_ARGUMENT_ERROR    = ARM_MATH_ARGUMENT_ERROR,
-	UKFMO__LENGTH_ERROR     = ARM_MATH_LENGTH_ERROR,
-	UKFMO_SIZE_MISMATCH     = ARM_MATH_SIZE_MISMATCH,
-	UKFMO_NANINF            = ARM_MATH_NANINF,
-	UKFMO_SINGULAR          = ARM_MATH_SINGULAR,
-	UKFMO_TEST_FAULURE      = ARM_MATH_TEST_FAILURE,
+	UKFMO_OK                 = ARM_MATH_SUCCESS,
+	UKFMO_ARGUMENT_ERROR     = ARM_MATH_ARGUMENT_ERROR,
+	UKFMO__LENGTH_ERROR      = ARM_MATH_LENGTH_ERROR,
+	UKFMO_SIZE_MISMATCH      = ARM_MATH_SIZE_MISMATCH,
+	UKFMO_NANINF             = ARM_MATH_NANINF,
+	UKFMO_SINGULAR           = ARM_MATH_SINGULAR,
+	UKFMO_TEST_FAULURE       = ARM_MATH_TEST_FAILURE,
 	#else
-	UKFMO_OK = 0,
+	UKFMO_OK                 = 0u,
 	UKFMO_ERROR,
 	UKFMO_SIZE_MISMATCH,
 	UKFMO_SINGULAR,
@@ -304,7 +304,7 @@ UKFMO_MatrixMultiplication(
 	__UKFMO_FPT__ const * const pSrc1L  = (__UKFMO_FPT__ *)pSrcA_s->pData;
 	__UKFMO_FPT__ const * const pSrc2L  = (__UKFMO_FPT__ *)pSrcB_s->pData;
 	__UKFMO_FPT__ * const pDstL         = (__UKFMO_FPT__ *)pDst_s->pData;
-	uint8_t row, col, k;
+	size_t row, col, k;
 	__UKFMO_FPT__ sum;
 
 	if (pSrcA_s->columnNumb == pSrcB_s->rowNumb)
@@ -431,7 +431,7 @@ UKFMO_MatrixTranspose(
 	const uint16_t nColSrcL = pSrc_s->columnNumb;
 	const uint16_t nRowDstL = pDst_s->rowNumb;
 	const uint16_t nColDstL = pDst_s->columnNumb;
-	uint16_t row, col;
+	size_t row, col;
 
 	ukfmo_fnc_status_e status_e = UKFMO_OK;
 	if (nRowSrcL == nColDstL || nColSrcL == nRowDstL)
@@ -492,11 +492,11 @@ UKFMO_MatrixInverse(
 	#endif
 	#else
 	ukfmo_fnc_status_e status_e = UKFMO_OK;
-	const uint8_t nrow = pSrc_s->rowNumb;
-	const uint8_t ncol = pSrc_s->columnNumb;
-	uint8_t j, i;
-	uint8_t k = 0;
-	uint8_t l = 0;
+	const size_t nrow = pSrc_s->rowNumb;
+	const size_t ncol = pSrc_s->columnNumb;
+	size_t j, i;
+	size_t k = 0;
+	size_t l = 0;
 	__UKFMO_FPT__ s = 0;
 	__UKFMO_FPT__ t = 0;
 
