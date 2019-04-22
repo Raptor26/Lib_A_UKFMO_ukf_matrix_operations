@@ -116,6 +116,484 @@ ukfmo_matrix_s;
 
 
 /*#### |Begin| --> Секция - "Прототипы глобальных функций" ###################*/
+
+/*-------------------------------------------------------------------------*//**
+ * @author    Mickle Isaev
+ * @date      22-апр-2019
+ *
+ * @brief   Функция выполняет сложение двух матриц
+ *
+ * @param   *pSrcA_s: Указатель на структуру первой матрицы
+ * @param   *pSrcB_s: Указатель на структуру второй матрицы
+ * @param   *pDst_s:  Указатель на структуру матрицы, в которую будет 
+ *                    записан результат сложения матриц
+ * @return  Статус операции
+ *                 @see ukfmo_fnc_status_e
+ * 
+ */
+__UKFMO_ALWAYS_INLINE ukfmo_fnc_status_e
+UKMO_MatrixAdition(
+#if defined(__UKFMO_USE_ARM_MATH__)
+	#if (__UKFMO_FPT_SIZE__)    == 4
+		arm_matrix_instance_f32 *pSrcA_s,
+		arm_matrix_instance_f32 *pSrcB_s,
+		arm_matrix_instance_f32 *pDst_s
+	#elif (__UKFMO_FPT_SIZE__)  == 8
+		arm_matrix_instance_f64 *pSrcA_s,
+		arm_matrix_instance_f64 *pSrcB_s,
+		arm_matrix_instance_f64 *pDst_s
+	#endif
+#else
+	ukfmo_matrix_s *pSrcA_s,
+	ukfmo_matrix_s *pSrcB_s,
+	ukfmo_matrix_s *pDst_s
+#endif
+)
+{
+	#if defined(__UKFMO_USE_ARM_MATH__)
+	arm_status status_e;
+	#if (__UKFMO_FPT_SIZE__) == 4
+	status_e = arm_mat_add_f32(pSrcA_s, pSrcB_s, pDst_s);
+	#else
+	status_e = arm_mat_add_f64(pSrcA_s, pSrcB_s, pDst_s);
+	#endif
+	#else
+	ukfmo_fnc_status_e status_e = UKFMO_OK;
+	__UKFMO_FPT__ * const pDstL         = (__UKFMO_FPT__ *)pDst_s->pData;
+	__UKFMO_FPT__ const * const pSrcA_  = (__UKFMO_FPT__ *)pSrcA_s->pData;
+	__UKFMO_FPT__ const * const pSrcB_  = (__UKFMO_FPT__ *)pSrcB_s->pData;
+	if ((pSrcA_s->columnNumb == pSrcB_s->columnNumb) && (pSrcA_s->rowNumb == pSrcB_s->rowNumb))
+	{
+		size_t eIdx;
+		for (eIdx = 0; eIdx < pSrcA_s->columnNumb * pSrcA_s->rowNumb; eIdx++)
+		{
+			pDstL[eIdx] = pSrcA_[eIdx] + pSrcB_[eIdx];
+		}
+	}
+	else
+	{
+		status_e = UKFMO_SIZE_MISMATCH;
+	}
+	#endif
+
+	return (status_e);
+}
+
+/*-------------------------------------------------------------------------*//**
+ * @author    Mickle Isaev
+ * @date      22-апр-2019
+ *
+ * @brief    Функция выполняет вычитание двух матриц
+ *
+ * @param   *pSrcA_s: Указатель на структуру первой матрицы
+ * @param   *pSrcB_s: Указатель на структуру второй матрицы
+ * @param   *pDst_s:  Указатель на структуру матрицы, в которую будет 
+ *                    записан результат вычитания матриц
+ *
+ * @return  Статус операции
+ *                 @see ukfmo_fnc_status_e
+ * 
+ */
+__UKFMO_ALWAYS_INLINE ukfmo_fnc_status_e
+UKMO_MatrixSubstraction(
+#if defined(__UKFMO_USE_ARM_MATH__)
+	#if (__UKFMO_FPT_SIZE__)    == 4
+		arm_matrix_instance_f32 *pSrcA_s,
+		arm_matrix_instance_f32 *pSrcB_s,
+		arm_matrix_instance_f32 *pDst_s
+	#elif (__UKFMO_FPT_SIZE__)  == 8
+		arm_matrix_instance_f64 *pSrcA_s,
+		arm_matrix_instance_f64 *pSrcB_s,
+		arm_matrix_instance_f64 *pDst_s
+	#endif
+#else
+	ukfmo_matrix_s *pSrcA_s,
+	ukfmo_matrix_s *pSrcB_s,
+	ukfmo_matrix_s *pDst_s
+#endif
+)
+{
+	#if defined(__UKFMO_USE_ARM_MATH__)
+	arm_status status_e;
+	#if (__UKFMO_FPT_SIZE__) == 4
+	status_e = arm_mat_sub_f32(pSrcA_s, pSrcB_s, pDst_s);
+	#else
+	status_e = arm_mat_sub_f64(pSrcA_s, pSrcB_s, pDst_s);
+	#endif
+	#else
+	ukfmo_fnc_status_e status_e = UKFMO_OK;
+	__UKFMO_FPT__ * const pDstL         = (__UKFMO_FPT__ *)pDst_s->pData;
+	__UKFMO_FPT__ const * const pSrcA_  = (__UKFMO_FPT__ *)pSrcA_s->pData;
+	__UKFMO_FPT__ const * const pSrcB_  = (__UKFMO_FPT__ *)pSrcB_s->pData;
+	if ((pSrcA_s->columnNumb == pSrcB_s->columnNumb) && (pSrcA_s->rowNumb == pSrcB_s->rowNumb))
+	{
+		size_t eIdx;
+		for (eIdx = 0; eIdx < pSrcA_s->columnNumb * pSrcA_s->rowNumb; eIdx++)
+		{
+			pDstL[eIdx] = pSrcA_[eIdx] - pSrcB_[eIdx];
+		}
+	}
+	else
+	{
+		status_e = UKFMO_SIZE_MISMATCH;
+	}
+	#endif
+
+	return (status_e);
+}
+
+/*-------------------------------------------------------------------------*//**
+ * @author    Mickle Isaev
+ * @date      22-апр-2019
+ *
+ * @brief    Функция выполняет умножение двух матриц
+ *
+ * @param   *pSrcA_s: Указатель на структуру первой матрицы
+ * @param   *pSrcB_s: Указатель на структуру второй матрицы
+ * @param   *pDst_s:  Указатель на структуру матрицы, в которую будет 
+ *                    записан результат умножения матриц
+ *
+ * @return  Статус операции
+ *                 @see ukfmo_fnc_status_e
+ * 
+ */
+__UKFMO_ALWAYS_INLINE ukfmo_fnc_status_e
+UKFMO_MatrixMultiplication(
+#if defined(__UKFMO_USE_ARM_MATH__)
+	#if (__UKFMO_FPT_SIZE__)    == 4
+		arm_matrix_instance_f32 *pSrcA_s,
+		arm_matrix_instance_f32 *pSrcB_s,
+		arm_matrix_instance_f32 *pDst_s
+	#elif (__UKFMO_FPT_SIZE__)  == 8
+		arm_matrix_instance_f64 *pSrcA_s,
+		arm_matrix_instance_f64 *pSrcB_s,
+		arm_matrix_instance_f64 *pDst_s
+	#endif
+#else
+	ukfmo_matrix_s *pSrcA_s,
+	ukfmo_matrix_s *pSrcB_s,
+	ukfmo_matrix_s *pDst_s
+#endif
+)
+{
+	#if defined(__UKFMO_USE_ARM_MATH__)
+	arm_status status_e;
+	#if (__UKFMO_FPT_SIZE__) == 4
+	status_e = arm_mat_mult_f32(pSrcA_s, pSrcB_s, pDst_s);
+	#else
+	status_e = arm_mat_mult_f64(pSrcA_s, pSrcB_s, pDst_s);
+	#endif
+	#else
+	ukfmo_fnc_status_e status_e = UKFMO_OK;
+	__UKFMO_FPT__ const * const pSrc1L  = (__UKFMO_FPT__ *)pSrcA_s->pData;
+	__UKFMO_FPT__ const * const pSrc2L  = (__UKFMO_FPT__ *)pSrcB_s->pData;
+	__UKFMO_FPT__ * const pDstL         = (__UKFMO_FPT__ *)pDst_s->pData;
+	uint8_t row, col, k;
+	__UKFMO_FPT__ sum;
+
+	if (pSrcA_s->columnNumb == pSrcB_s->rowNumb)
+	{
+		for (row = 0; row < pSrcA_s->rowNumb; row++)
+		{
+			for (col = 0; col < pSrcB_s->columnNumb; col++)
+			{
+				sum = 0;
+				for (k = 0; k < pSrcA_s->columnNumb; k++)
+				{
+					sum += pSrc1L[pSrcA_s->columnNumb * row + k] * pSrc2L[pSrcB_s->columnNumb * k + col];
+				}
+				pDstL[pDst_s->columnNumb * row + col] = sum;
+			}
+		}
+	}
+	else
+	{
+		status_e = UKFMO_SIZE_MISMATCH;
+	}
+	#endif
+
+	return (status_e);
+}
+
+/*-------------------------------------------------------------------------*//**
+ * @author    Mickle Isaev
+ * @date      22-апр-2019
+ *
+ * @brief    Функция выполняет умножение матрицы на скаляр
+ *
+ * @param   *pSrc_s:  Указатель на структуру матрицы, которую необходимо 
+ *                    умножить на скаляр
+ * @param   *pDst_s:  Указатель на структуру матрицы, в которую будет 
+ *                    записан результат умножения матрицы на скаляр
+ *
+ * @return  Статус операции
+ *                 @see ukfmo_fnc_status_e
+ */
+__UKFMO_ALWAYS_INLINE ukfmo_fnc_status_e
+UKFMO_MatrixMultScale(
+#if defined(__UKFMO_USE_ARM_MATH__)
+	#if (__UKFMO_FPT_SIZE__)    == 4
+		arm_matrix_instance_f32 *pSrc_s,
+		__UKFMO_FPT__           scale,
+		arm_matrix_instance_f32 *pDst_s
+	#elif (__UKFMO_FPT_SIZE__)  == 8
+		arm_matrix_instance_f64 *pSrc_s,
+		__UKFMO_FPT__           scale,
+		arm_matrix_instance_f64 *pDst_s
+	#endif
+#else
+	ukfmo_matrix_s *pSrc_s,
+	__UKFMO_FPT__   scale,
+	ukfmo_matrix_s *pDst_s
+#endif
+)
+{
+	#if defined(__UKFMO_USE_ARM_MATH__)
+	arm_status status_e;
+	#if (__UKFMO_FPT_SIZE__) == 4
+	status_e = arm_mat_scale_f32(pSrc_s, scale, pDst_s);
+	#else
+	status_e = arm_mat_scale_f64(pSrc_s, scale, pDst_s);
+	#endif
+	#else
+
+	ukfmo_fnc_status_e status_e = UKFMO_OK;
+	__UKFMO_FPT__ *pDst = (__UKFMO_FPT__ *)pDst_s->pData;
+	size_t eIdx;
+	for (eIdx = 0; eIdx < pSrc_s->columnNumb * pSrc_s->rowNumb; eIdx++)
+	{
+		pDst[eIdx] *= scale;
+	}
+	#endif
+
+	return (status_e);
+}
+
+/*-------------------------------------------------------------------------*//**
+ * @author    Mickle Isaev
+ * @date      22-апр-2019
+ *
+ * @brief    Функция выполняет транспонирование матрицы
+ *
+ * @param   *pSrc_s:  Указатель на структуру матрицы, транспонирование 
+ *                    которой необходимо выполнить
+ * @param   *pDst_s:  Указатель на структуру матрицы, в которую будет 
+ *                    записана транспонированная матрица
+ *
+ * @return  Статус операции
+ *                 @see ukfmo_fnc_status_e
+ */
+__UKFMO_ALWAYS_INLINE ukfmo_fnc_status_e
+UKFMO_MatrixTranspose(
+#if defined(__UKFMO_USE_ARM_MATH__)
+	#if (__UKFMO_FPT_SIZE__)    == 4
+		arm_matrix_instance_f32 *pSrc_s,
+		arm_matrix_instance_f32 *pDst_s
+	#elif (__UKFMO_FPT_SIZE__)  == 8
+		arm_matrix_instance_f64 *pSrc_s,
+		arm_matrix_instance_f64 *pDst_s
+	#endif
+#else
+	ukfmo_matrix_s *pSrc_s,
+	ukfmo_matrix_s *pDst_s
+#endif
+)
+{
+	#if defined(__UKFMO_USE_ARM_MATH__)
+	arm_status status_e;
+	#if( __UKFMO_FPT_SIZE__) == 4
+	status_e = arm_mat_trans_f32(pSrc_s, pDst_s);
+	#else
+	status_e = arm_mat_trans_f64(pSrc_s, pDst_s);
+	#endif
+
+	#else
+	/* -->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> */
+	__UKFMO_FPT__ const * const pSrcL   = (__UKFMO_FPT__ *)pSrc_s->pData;
+	__UKFMO_FPT__ * const pDstL         = (__UKFMO_FPT__ *)pDst_s->pData;
+	const uint16_t nRowSrcL = pSrc_s->rowNumb;
+	const uint16_t nColSrcL = pSrc_s->columnNumb;
+	const uint16_t nRowDstL = pDst_s->rowNumb;
+	const uint16_t nColDstL = pDst_s->columnNumb;
+	uint16_t row, col;
+
+	ukfmo_fnc_status_e status_e = UKFMO_OK;
+	if (nRowSrcL == nColDstL || nColSrcL == nRowDstL)
+	{
+		for (row = 0; row < nRowDstL; row++)
+		{
+			for (col = 0; col < nColDstL; col++)
+			{
+				pDstL[nColDstL * row + col] = pSrcL[nColSrcL * col + row];
+			}
+		}
+	}
+	else
+	{
+		status_e = UKFMO_SIZE_MISMATCH;
+	}
+	#endif /* defined(__UKFMO_USE_ARM_MATH__) */
+	/* --<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
+	return (status_e);
+}
+
+/*-------------------------------------------------------------------------*//**
+ * @author    Mickle Isaev
+ * @date      22-апр-2019
+ *
+ * @brief    Функция находит инверсную матрицу
+ *
+ * @param   *pSrc_s:  Указатель на структуру матрицы от которой 
+ *                    необходимо найти инверсную матрицу
+ * @param   *pDst_s:  Указатель на структуру матрицы, в которую будет 
+ *                    записана инверсная матрица
+ *
+ * @return  Статус операции
+ *                 @see ukfmo_fnc_status_e
+ */
+__UKFMO_ALWAYS_INLINE ukfmo_fnc_status_e
+UKFMO_MatrixInverse(
+#if defined(__UKFMO_USE_ARM_MATH__)
+	#if (__UKFMO_FPT_SIZE__)    == 4
+		arm_matrix_instance_f32 *pSrc_s,
+		arm_matrix_instance_f32 *pDst_s
+	#elif (__UKFMO_FPT_SIZE__)  == 8
+		arm_matrix_instance_f64 *pSrc_s,
+		arm_matrix_instance_f64 *pDst_s
+	#endif
+#else
+	ukfmo_matrix_s *pSrc_s,
+	ukfmo_matrix_s *pDst_s
+#endif
+)
+{
+	#if defined(__UKFMO_USE_ARM_MATH__)
+	arm_status status_e;
+	#if (__UKFMO_FPT_SIZE__) == 4
+	status_e = arm_mat_inverse_f32(pSrc_s, pDst_s);
+	#else
+	status_e = arm_mat_inverse_f64(pSrc_s, pDst_s);
+	#endif
+	#else
+	ukfmo_fnc_status_e status_e = UKFMO_OK;
+	const uint8_t nrow = pSrc_s->rowNumb;
+	const uint8_t ncol = pSrc_s->columnNumb;
+	uint8_t j, i;
+	uint8_t k = 0;
+	uint8_t l = 0;
+	__UKFMO_FPT__ s = 0;
+	__UKFMO_FPT__ t = 0;
+
+	if (nrow == ncol)
+	{
+		for (j = 0; j < nrow; j++)
+		{
+			for (i = j; i < nrow; i++)
+			{
+				if (0 != pSrc_s->pData[ncol * i + j])
+				{
+					for (k = 0; k < nrow; k++)
+					{
+						s = pSrc_s->pData[ncol * j + k];
+						pSrc_s->pData[ncol * j + k] = pSrc_s->pData[ncol * i + k];
+						pSrc_s->pData[ncol * i + k] = s;
+
+						s = pDst_s->pData[ncol * j + k];
+						pDst_s->pData[ncol * j + k] = pDst_s->pData[ncol * i + k];
+						pDst_s->pData[ncol * i + k] = s;
+					}
+
+					t = 1 / pSrc_s->pData[ncol * j + j];
+
+					for (k = 0; k < nrow; k++)
+					{
+						pSrc_s->pData[ncol * j + k] = t * pSrc_s->pData[ncol * j + k];
+						pDst_s->pData[ncol * j + k] = t * pDst_s->pData[ncol * j + k];
+					}
+
+					for (l = 0; l < nrow; l++)
+					{
+						if (l != j)
+						{
+							t = -pSrc_s->pData[ncol * l + j];
+							for (k = 0; k < nrow; k++)
+							{
+								pSrc_s->pData[ncol * l + k] += t *  pSrc_s->pData[ncol * j + k];
+								pDst_s->pData[ncol * l + k] += t *  pDst_s->pData[ncol * j + k];
+							}
+						}
+					}
+				}
+				break;
+			}
+			if (0 == pSrc_s->pData[ncol * l + k])
+			{
+				status_e = UKFMO_SINGULAR;
+			}
+		}
+	}
+	else
+	{
+		status_e = UKFMO_SIZE_MISMATCH;
+	}
+	#endif
+
+	return (status_e);
+}
+
+/*-------------------------------------------------------------------------*//**
+ * @author    Mickle Isaev
+ * @date      22-апр-2019
+ *
+ * @brief   Функция выполняет разложение Холецкого квадратной матрицы
+ * @param[in]   *pSrcMatrix:    Указатель на нулевой элемент массива (двумерной
+ *                              квадратной матрицы), разложение которой необходимо
+ *                              выполнить
+ * @param[out]  *pDstMatrix:    Указатель на нулевой элемент массива (двумерной
+ *                              квадратной матрицы) в который будет записан
+ *                              результат разложения Холецкого
+ * @param[in]   rowOrColumnNumb:    Количество строк или столбцов квадратной
+ *                                  матрицы, разложение которой необходимо
+ *                                  выполнить
+ * @return  None
+ */
+__UKFMO_ALWAYS_INLINE void
+UKMO_GetCholeskyLow(
+	__UKFMO_FPT__ *pSrcMatrix,
+	__UKFMO_FPT__ *pDstMatrix,
+	size_t rowOrColumnNumb)
+{
+	size_t marixSize = rowOrColumnNumb * rowOrColumnNumb;
+	__UKFMO_FPT__ dstMatrixTemp_a[marixSize];
+	memset(
+		dstMatrixTemp_a,
+		0,
+		marixSize);
+
+	size_t i,
+		   j;
+	for (i = 0; i < rowOrColumnNumb; i++)
+	{
+		for (j = 0; j < (i + 1); j++)
+		{
+			__UKFMO_FPT__ s = 0;
+			for (size_t k = 0; k < j; k++)
+			{
+				s += dstMatrixTemp_a[i * rowOrColumnNumb + k] * dstMatrixTemp_a[j * rowOrColumnNumb + k];
+			}
+
+			dstMatrixTemp_a[i * rowOrColumnNumb + j] =
+				(i == j) ?
+				__UKFMO_sqrt(pSrcMatrix[i * rowOrColumnNumb + i] - s) :
+				(1.0 / dstMatrixTemp_a[j * rowOrColumnNumb + j] * (pSrcMatrix[i * rowOrColumnNumb + j] - s));
+		}
+	}
+
+	memcpy(
+		pDstMatrix,
+		dstMatrixTemp_a,
+		sizeof(dstMatrixTemp_a));
+}
 /*#### |End  | <-- Секция - "Прототипы глобальных функций" ###################*/
 
 
