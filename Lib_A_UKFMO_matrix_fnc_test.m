@@ -53,7 +53,7 @@ UKFMOTEST_matrixC_a(7,7) = 0.514428619342896;
 %step 9
 UKFMOTEST_matrixB_a = inv(UKFMOTEST_matrixC_a);
 
-UKFMOTEST_matrixC_a = chol(UKFMOTEST_matrixB_a, 'lower');
+UKFMOTEST_matrixB_a = chol(UKFMOTEST_matrixB_a, 'lower');
 
 %step 10
 UKFMOTEST_initialMatrix_a = UKFMOTEST_matrixB_a - UKFMOTEST_initialMatrix_a;

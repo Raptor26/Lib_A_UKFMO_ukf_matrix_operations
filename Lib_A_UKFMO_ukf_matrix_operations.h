@@ -89,11 +89,15 @@ typedef enum
 	UKFMO_NANINF             = ARM_MATH_NANINF,
 	UKFMO_SINGULAR           = ARM_MATH_SINGULAR,
 	UKFMO_TEST_FAULURE       = ARM_MATH_TEST_FAILURE,
+	UKFMO_NOT_POS_DEFINED,
+	UKFMO_NOT_SQUARE,
 	#else
 	UKFMO_OK                 = 0u,
 	UKFMO_ERROR,
 	UKFMO_SIZE_MISMATCH,
 	UKFMO_SINGULAR,
+	UKFMO_NOT_POS_DEFINED,
+	UKFMO_NOT_SQUARE,
 	#endif
 } ukfmo_fnc_status_e;
 
@@ -182,7 +186,7 @@ UKFMO_MatrixZeros(
  * @param[in]   *pSrcB_s: Указатель на структуру второй матрицы
  * @param[out]  *pDst_s:  Указатель на структуру матрицы, в которую будет
  *                        записан результат сложения матриц
- *                    
+ *
  * @return  Статус операции
  *                @see ukfmo_fnc_status_e
  */
@@ -612,42 +616,63 @@ UKFMO_MatrixInverse(
  *                                  выполнить
  * @return  None
  */
-__UKFMO_ALWAYS_INLINE void
+__UKFMO_ALWAYS_INLINE ukfmo_fnc_status_e
 UKFMO_GetCholeskyLow(
-	__UKFMO_FPT__ *pSrcMatrix,
-	__UKFMO_FPT__ *pDstMatrix,
-	size_t rowOrColumnNumb)
+#if defined(__UKFMO_USE_ARM_MATH__)
+	#if (__UKFMO_FPT_SIZE__)    == 4
+		arm_matrix_instance_f32 *pSrc_s
+	#elif (__UKFMO_FPT_SIZE__)  == 8
+		arm_matrix_instance_f64 *pSrc_s
+	#endif
+#else
+	ukfmo_matrix_s *pSrc_s
+#endif
+)
 {
-	size_t marixSize = rowOrColumnNumb * rowOrColumnNumb;
-	__UKFMO_FPT__ dstMatrixTemp_a[marixSize];
-	memset(
-		dstMatrixTemp_a,
-		0,
-		marixSize);
+	ukfmo_fnc_status_e status_e = UKFMO_OK;
+	__UKFMO_FPT__ * const pSrcL = pSrc_s->pData;
+	size_t col, row;
+	int32_t tmp;
+	__UKFMO_FPT__ sum = 0;
+	#if defined(__UKFMO_USE_ARM_MATH__)
+	const size_t nrow = pSrc_s->numRows;
+	const size_t ncol = pSrc_s->numCols;
+	#else
+	const size_t nrow = pSrc_s->rowNumb;
+	const size_t ncol = pSrc_s->columnNumb;
+	#endif
 
-	size_t i,
-		   j;
-	for (i = 0; i < rowOrColumnNumb; i++)
+	if (ncol == nrow)
 	{
-		for (j = 0; j < (i + 1); j++)
-		{
-			__UKFMO_FPT__ s = 0;
-			for (size_t k = 0; k < j; k++)
-			{
-				s += dstMatrixTemp_a[i * rowOrColumnNumb + k] * dstMatrixTemp_a[j * rowOrColumnNumb + k];
-			}
+		const size_t mtxSize = nrow;
 
-			dstMatrixTemp_a[i * rowOrColumnNumb + j] =
-				(i == j) ?
-				__UKFMO_sqrt(pSrcMatrix[i * rowOrColumnNumb + i] - s) :
-				(1.0 / dstMatrixTemp_a[j * rowOrColumnNumb + j] * (pSrcMatrix[i * rowOrColumnNumb + j] - s));
+		for (col = 0; col < mtxSize; col++)
+		{
+			for (row = 0; row < mtxSize; row++)
+			{
+				sum = pSrcL[mtxSize * col + row];
+
+				for (tmp = (int32_t)(col - 1); tmp >= 0; tmp--)
+				{
+					sum -= pSrcL[mtxSize * row + tmp] * pSrcL[mtxSize * col + tmp];
+				}
+
+				pSrcL[ncol * row + col] = (row == col) ? sqrt(sum) : (row > col) ? (sum / pSrcL[ncol * col + col]) : 0;
+
+
+				if ((row == col) && (sum <= 0))
+				{
+					status_e = UKFMO_NOT_POS_DEFINED;
+				}
+			}
 		}
 	}
+	else
+	{
+		status_e = UKFMO_NOT_SQUARE;
+	}
 
-	memcpy(
-		(void*) pDstMatrix,
-		(void*) dstMatrixTemp_a,
-		sizeof(dstMatrixTemp_a));
+	return (status_e);
 }
 /*#### |End  | <-- Секция - "Прототипы глобальных функций" ###################*/
 
