@@ -133,6 +133,45 @@ UKFMO_MatrixInit(
 	size_t columnNumb,
 	__UKFMO_FPT__ *pMatrix);
 
+extern ukfmo_fnc_status_e
+UKFMO_MatrixOnes(
+#if defined(__UKFMO_USE_ARM_MATH__)
+	#if (__UKFMO_FPT_SIZE__)    == 4
+		arm_matrix_instance_f32 *pSrc_s
+	#elif (__UKFMO_FPT_SIZE__)  == 8
+		arm_matrix_instance_f64 *pSrc_s
+	#endif
+#else
+	ukfmo_matrix_s *pSrc_s
+#endif
+);
+
+extern ukfmo_fnc_status_e
+UKFMO_MatrixIdentity(
+#if defined(__UKFMO_USE_ARM_MATH__)
+	#if (__UKFMO_FPT_SIZE__)    == 4
+		arm_matrix_instance_f32 *pSrc_s
+	#elif (__UKFMO_FPT_SIZE__)  == 8
+		arm_matrix_instance_f64 *pSrc_s
+	#endif
+#else
+	ukfmo_matrix_s *pSrc_s
+#endif
+);
+
+extern ukfmo_fnc_status_e
+UKFMO_MatrixZeros(
+#if defined(__UKFMO_USE_ARM_MATH__)
+	#if (__UKFMO_FPT_SIZE__)    == 4
+		arm_matrix_instance_f32 *pSrc_s
+	#elif (__UKFMO_FPT_SIZE__)  == 8
+		arm_matrix_instance_f64 *pSrc_s
+	#endif
+#else
+	ukfmo_matrix_s *pSrc_s
+#endif
+);
+
 /*-------------------------------------------------------------------------*//**
  * @author    Mickle Isaev
  * @date      22-апр-2019
@@ -574,7 +613,7 @@ UKFMO_MatrixInverse(
  * @return  None
  */
 __UKFMO_ALWAYS_INLINE void
-UKMO_GetCholeskyLow(
+UKFMO_GetCholeskyLow(
 	__UKFMO_FPT__ *pSrcMatrix,
 	__UKFMO_FPT__ *pDstMatrix,
 	size_t rowOrColumnNumb)
@@ -606,8 +645,8 @@ UKMO_GetCholeskyLow(
 	}
 
 	memcpy(
-		pDstMatrix,
-		dstMatrixTemp_a,
+		(void*) pDstMatrix,
+		(void*) dstMatrixTemp_a,
 		sizeof(dstMatrixTemp_a));
 }
 /*#### |End  | <-- Секция - "Прототипы глобальных функций" ###################*/

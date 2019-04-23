@@ -80,6 +80,34 @@ UKFMO_MatrixInit(
 }
 
 ukfmo_fnc_status_e
+UKFMO_MatrixOnes(
+#if defined(__UKFMO_USE_ARM_MATH__)
+	#if (__UKFMO_FPT_SIZE__)    == 4
+		arm_matrix_instance_f32 *pSrc_s
+	#elif (__UKFMO_FPT_SIZE__)  == 8
+		arm_matrix_instance_f64 *pSrc_s
+	#endif
+#else
+	ukfmo_matrix_s *pSrc_s
+#endif
+)
+{
+	#if defined(__UKFMO_USE_ARM_MATH__)
+	memset(
+		(void*) pSrc_s->pData,
+		(int) 1u,
+		sizeof(__UKFMO_FPT_SIZE__) * pSrc_s->numCols * pSrc_s->numCols);
+	#else
+	memset(
+		(void*) pSrc_s->pData,
+		1,
+		sizeof(__UKFMO_FPT_SIZE__) * pSrc_s->columnNumb * pSrc_s->rowNumb);
+	#endif
+
+	return (UKFMO_OK);
+}
+
+ukfmo_fnc_status_e
 UKFMO_MatrixIdentity(
 #if defined(__UKFMO_USE_ARM_MATH__)
 	#if (__UKFMO_FPT_SIZE__)    == 4
