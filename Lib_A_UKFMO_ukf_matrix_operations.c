@@ -93,15 +93,17 @@ UKFMO_MatrixOnes(
 )
 {
 	#if defined(__UKFMO_USE_ARM_MATH__)
-	memset(
-		(void*) pSrc_s->pData,
-		(int) 1u,
-		sizeof(__UKFMO_FPT_SIZE__) * pSrc_s->numCols * pSrc_s->numCols);
+	size_t i;
+	for (i = 0; i < pSrc_s->numCols * pSrc_s->numRows; i++)
+	{
+		pSrc_s->pData[i] = (__UKFMO_FPT__) 1.0;
+	}
 	#else
-	memset(
-		(void*) pSrc_s->pData,
-		1,
-		sizeof(__UKFMO_FPT_SIZE__) * pSrc_s->columnNumb * pSrc_s->rowNumb);
+	size_t i;
+	for (i = 0; i < pSrc_s->columnNumb * pSrc_s->rowNumb; i++)
+	{
+		pSrc_s->pData[i] = (__UKFMO_FPT__) 1.0;
+	}
 	#endif
 
 	return (UKFMO_OK);

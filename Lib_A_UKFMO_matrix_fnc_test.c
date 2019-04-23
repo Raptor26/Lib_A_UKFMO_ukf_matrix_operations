@@ -123,7 +123,7 @@ UKFMOTEST_Test(void)
 				UKFMOTEST_MATRIX_ROW,
 				UKFMOTEST_MATRIX_COLUMN,
 				(__UKFMO_FPT__*) UKFMOTEST_matrixC_a);
-	UKFMO_MatrixZeros(&UKFMOTEST_matrixC_s);
+	UKFMO_MatrixOnes(&UKFMOTEST_matrixC_s);
 	UKFMOTEST_matrixC_a[0][0] = 0.514428619342896;
 	UKFMOTEST_matrixC_a[1][1] = 0.514428619342896;
 	UKFMOTEST_matrixC_a[2][2] = 0.514428619342896;
@@ -141,7 +141,7 @@ UKFMOTEST_Test(void)
 	UKFMO_GetCholeskyLow(
 		(__UKFMO_FPT__*) UKFMOTEST_matrixB_a,
 		(__UKFMO_FPT__*) UKFMOTEST_matrixC_a,
-		UKFMOTEST_matrixC_s.numCols);
+		UKFMOTEST_matrixC_s.columnNumb);
 
 	/* step10 */
 	UKMO_MatrixSubstraction(
