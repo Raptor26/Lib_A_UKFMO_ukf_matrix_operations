@@ -25,6 +25,7 @@
 /*==== |End  | <-- Секция - "MK peripheral libraries" ========================*/
 
 /*==== |Begin| --> Секция - "Extern libraries" ===============================*/
+#include "Lib_A_UKFMO_macros_definitions.h"
 /*==== |End  | <-- Секция - "Extern libraries" ===============================*/
 /*#### |End  | <-- Секция - "Include" ########################################*/
 
@@ -57,26 +58,89 @@
 
 	/* inline*/
 	#ifndef __UKFMO_INLINE
-		#define __UKFMO_INLINE          inline
+		#define __UKFMO_INLINE              inline
 	#endif
 
 	/* static inline */
 	#ifndef __UKFMO_STATIC_INLINE
-		#define __UKFMO_STATIC_INLINE   static inline
+		#define __UKFMO_STATIC_INLINE       static inline
 	#endif
 
 	/* always inline */
 	#ifndef __UKFMO_ALWAYS_INLINE
-		#define __UKFMO_ALWAYS_INLINE    inline __attribute__((always_inline)) static
+		#define __UKFMO_ALWAYS_INLINE       inline __attribute__((always_inline)) static
 	#endif
-#ifndef __UKFMO_FORCE_INLINE
-#define __UKFMO_FORCE_INLINE	inline __attribute__((always_inline))
-#endif
+
+	/* force inline */
+	#ifndef __UKFMO_FORCE_INLINE
+		#define __UKFMO_FORCE_INLINE        inline __attribute__((always_inline))
+	#endif
 
 #else
 	#define __UKFMO_INLINE
 	#define __UKFMO_STATIC_INLINE   static
 	#define __UKFMO_ALWAYS_INLINE
+#endif
+
+#if defined (__GNUC__)
+	#ifndef __UKFMO_OPTIMIZE_O0
+		#define __UKFMO_OPTIMIZE_O0         __attribute__((optimize("O0")))
+	#endif
+
+	#ifndef __UKFMO_OPTIMIZE_O1
+		#define __UKFMO_OPTIMIZE_O1         __attribute__((optimize("O1")))
+	#endif
+
+	#ifndef __UKFMO_OPTIMIZE_O2
+		#define __UKFMO_OPTIMIZE_O2         __attribute__((optimize("O2")))
+	#endif
+
+	#ifndef __UKFMO_OPTIMIZE_O3
+		#define __UKFMO_OPTIMIZE_O3         __attribute__((optimize("O3")))
+	#endif
+
+	#ifndef __UKFMO_OPTIMIZE_OFAST
+		#define __UKFMO_OPTIMIZE_OFAST      __attribute__((optimize("Ofast")))
+	#endif
+
+	#ifndef __UKFMO_OPTIMIZE_OS
+		#define __UKFMO_OPTIMIZE_OS         __attribute__((optimize("Os")))
+	#endif
+
+#else
+	#ifndef __UKFMO_OPTIMIZE_O0
+		#define __UKFMO_OPTIMIZE_O0
+	#endif
+
+	#ifndef __UKFMO_OPTIMIZE_O1
+		#define __UKFMO_OPTIMIZE_O1
+	#endif
+
+	#ifndef __UKFMO_OPTIMIZE_O2
+		#define __UKFMO_OPTIMIZE_O2
+	#endif
+
+	#ifndef __UKFMO_OPTIMIZE_O3
+		#define __UKFMO_OPTIMIZE_O3
+	#endif
+
+	#ifndef __UKFMO_OPTIMIZE_OFAST
+		#define __UKFMO_OPTIMIZE_OFAST
+	#endif
+
+	#ifndef __UKFMO_OPTIMIZE_OS
+		#define __UKFMO_OPTIMIZE_OS
+	#endif
+#endif
+
+#if defined (__UKFMO_FNC_SPACE_NAME)
+	#if defined (__GNUC__)
+		#define __UKFMO_FNC_LOCATION_IN_SPECIAL_SPACE  __attribute__ ((section(__UKFMO_FNC_SPACE_NAME)))
+	#else
+		#error "You defined the name of the memory area for the function location, but the type of your compiler is not supported by the library. You can delete the macro definition __UKFMO_FNC_SPACE_NAME or extend the macro definition __UKFMO_LOCATION_IN_SPECIAL_SPACE for your compiler type"
+	#endif
+#else
+	#define __UKFMO_FNC_LOCATION_IN_SPECIAL_SPACE
 #endif
 /*#### |End  | <-- Секция - "Определение констант" ###########################*/
 
@@ -139,7 +203,7 @@ UKFMO_MatrixInit(
 	size_t rowNumb,
 	size_t columnNumb,
 	__UKFMO_FPT__ *pMatrix
-)__attribute__ ((section(".itcmram")));
+)__UKFMO_FNC_LOCATION_IN_SPECIAL_SPACE;
 
 extern ukfmo_fnc_status_e
 UKFMO_MatrixOnes(
@@ -152,7 +216,7 @@ UKFMO_MatrixOnes(
 #else
 	ukfmo_matrix_s *pSrc_s
 #endif
-) __attribute__ ((section(".itcmram")));
+)__UKFMO_FNC_LOCATION_IN_SPECIAL_SPACE;
 
 extern ukfmo_fnc_status_e
 UKFMO_MatrixIdentity(
@@ -165,23 +229,23 @@ UKFMO_MatrixIdentity(
 #else
 	ukfmo_matrix_s *pSrc_s
 #endif
-) __attribute__ ((section(".itcmram")));
+)__UKFMO_FNC_LOCATION_IN_SPECIAL_SPACE;
 
 
 /*-------------------------------------------------------------------------*//**
- * @author    Mickle Isaev
- * @date      22-апр-2019
- *
- * @brief   Функция выполняет сложение двух матриц
- *
- * @param[in]   *pSrcA_s: Указатель на структуру первой матрицы
- * @param[in]   *pSrcB_s: Указатель на структуру второй матрицы
- * @param[out]  *pDst_s:  Указатель на структуру матрицы, в которую будет
- *                        записан результат сложения матриц
- *
- * @return  Статус операции
- *                @see ukfmo_fnc_status_e
- */
+* @author    Mickle Isaev
+* @date      22-апр-2019
+*
+* @brief   Функция выполняет сложение двух матриц
+*
+* @param[in]   *pSrcA_s: Указатель на структуру первой матрицы
+* @param[in]   *pSrcB_s: Указатель на структуру второй матрицы
+* @param[out]  *pDst_s:  Указатель на структуру матрицы, в которую будет
+*                        записан результат сложения матриц
+*
+* @return  Статус операции
+*                @see ukfmo_fnc_status_e
+*/
 __UKFMO_ALWAYS_INLINE ukfmo_fnc_status_e
 UKMO_MatrixAdition(
 #if defined(__UKFMO_USE_ARM_MATH__)
@@ -231,20 +295,20 @@ UKMO_MatrixAdition(
 }
 
 /*-------------------------------------------------------------------------*//**
- * @author    Mickle Isaev
- * @date      22-апр-2019
- *
- * @brief    Функция выполняет вычитание двух матриц
- *
- * @param[in]   *pSrcA_s: Указатель на структуру первой матрицы
- * @param[in]   *pSrcB_s: Указатель на структуру второй матрицы
- * @param[out]  *pDst_s:  Указатель на структуру матрицы, в которую будет
- *                        записан результат вычитания матриц
- *
- * @return  Статус операции
- *                 @see ukfmo_fnc_status_e
- *
- */
+* @author    Mickle Isaev
+* @date      22-апр-2019
+*
+* @brief    Функция выполняет вычитание двух матриц
+*
+* @param[in]   *pSrcA_s: Указатель на структуру первой матрицы
+* @param[in]   *pSrcB_s: Указатель на структуру второй матрицы
+* @param[out]  *pDst_s:  Указатель на структуру матрицы, в которую будет
+*                        записан результат вычитания матриц
+*
+* @return  Статус операции
+*                 @see ukfmo_fnc_status_e
+*
+*/
 __UKFMO_ALWAYS_INLINE ukfmo_fnc_status_e
 UKMO_MatrixSubstraction(
 #if defined(__UKFMO_USE_ARM_MATH__)
@@ -294,20 +358,20 @@ UKMO_MatrixSubstraction(
 }
 
 /*-------------------------------------------------------------------------*//**
- * @author    Mickle Isaev
- * @date      22-апр-2019
- *
- * @brief    Функция выполняет умножение двух матриц
- *
- * @param[in]   *pSrcA_s: Указатель на структуру первой матрицы
- * @param[in]   *pSrcB_s: Указатель на структуру второй матрицы
- * @param[out]  *pDst_s:  Указатель на структуру матрицы, в которую будет
- *                        записан результат умножения матриц
- *
- * @return  Статус операции
- *                 @see ukfmo_fnc_status_e
- *
- */
+* @author    Mickle Isaev
+* @date      22-апр-2019
+*
+* @brief    Функция выполняет умножение двух матриц
+*
+* @param[in]   *pSrcA_s: Указатель на структуру первой матрицы
+* @param[in]   *pSrcB_s: Указатель на структуру второй матрицы
+* @param[out]  *pDst_s:  Указатель на структуру матрицы, в которую будет
+*                        записан результат умножения матриц
+*
+* @return  Статус операции
+*                 @see ukfmo_fnc_status_e
+*
+*/
 __UKFMO_ALWAYS_INLINE ukfmo_fnc_status_e
 UKFMO_MatrixMultiplication(
 #if defined(__UKFMO_USE_ARM_MATH__)
@@ -367,19 +431,19 @@ UKFMO_MatrixMultiplication(
 }
 
 /*-------------------------------------------------------------------------*//**
- * @author    Mickle Isaev
- * @date      22-апр-2019
- *
- * @brief    Функция выполняет умножение матрицы на скаляр
- *
- * @param[im]   *pSrc_s:  Указатель на структуру матрицы, которую необходимо
- *                        умножить на скаляр
- * @param[out]  *pDst_s:  Указатель на структуру матрицы, в которую будет
- *                        записан результат умножения матрицы на скаляр
- *
- * @return  Статус операции
- *                 @see ukfmo_fnc_status_e
- */
+* @author    Mickle Isaev
+* @date      22-апр-2019
+*
+* @brief    Функция выполняет умножение матрицы на скаляр
+*
+* @param[im]   *pSrc_s:  Указатель на структуру матрицы, которую необходимо
+*                        умножить на скаляр
+* @param[out]  *pDst_s:  Указатель на структуру матрицы, в которую будет
+*                        записан результат умножения матрицы на скаляр
+*
+* @return  Статус операции
+*                 @see ukfmo_fnc_status_e
+*/
 __UKFMO_ALWAYS_INLINE ukfmo_fnc_status_e
 UKFMO_MatrixMultScale(
 #if defined(__UKFMO_USE_ARM_MATH__)
@@ -421,19 +485,19 @@ UKFMO_MatrixMultScale(
 }
 
 /*-------------------------------------------------------------------------*//**
- * @author    Mickle Isaev
- * @date      22-апр-2019
- *
- * @brief    Функция выполняет транспонирование матрицы
- *
- * @param[in]   *pSrc_s:  Указатель на структуру матрицы, транспонирование
- *                        которой необходимо выполнить
- * @param[out]  *pDst_s:  Указатель на структуру матрицы, в которую будет
- *                        записана транспонированная матрица
- *
- * @return  Статус операции
- *                 @see ukfmo_fnc_status_e
- */
+* @author    Mickle Isaev
+* @date      22-апр-2019
+*
+* @brief    Функция выполняет транспонирование матрицы
+*
+* @param[in]   *pSrc_s:  Указатель на структуру матрицы, транспонирование
+*                        которой необходимо выполнить
+* @param[out]  *pDst_s:  Указатель на структуру матрицы, в которую будет
+*                        записана транспонированная матрица
+*
+* @return  Статус операции
+*                 @see ukfmo_fnc_status_e
+*/
 __UKFMO_ALWAYS_INLINE ukfmo_fnc_status_e
 UKFMO_MatrixTranspose(
 #if defined(__UKFMO_USE_ARM_MATH__)
@@ -489,19 +553,19 @@ UKFMO_MatrixTranspose(
 }
 
 /*-------------------------------------------------------------------------*//**
- * @author    Mickle Isaev
- * @date      22-апр-2019
- *
- * @brief    Функция находит инверсную матрицу
- *
- * @param[in]   *pSrc_s:  Указатель на структуру матрицы от которой
- *                        необходимо найти инверсную матрицу
- * @param[out]  *pDst_s:  Указатель на структуру матрицы, в которую будет
- *                        записана инверсная матрица
- *
- * @return  Статус операции
- *                 @see ukfmo_fnc_status_e
- */
+* @author    Mickle Isaev
+* @date      22-апр-2019
+*
+* @brief    Функция находит инверсную матрицу
+*
+* @param[in]   *pSrc_s:  Указатель на структуру матрицы от которой
+*                        необходимо найти инверсную матрицу
+* @param[out]  *pDst_s:  Указатель на структуру матрицы, в которую будет
+*                        записана инверсная матрица
+*
+* @return  Статус операции
+*                 @see ukfmo_fnc_status_e
+*/
 extern ukfmo_fnc_status_e
 UKFMO_MatrixZeros(
 #if defined(__UKFMO_USE_ARM_MATH__)
@@ -513,7 +577,7 @@ UKFMO_MatrixZeros(
 #else
 	ukfmo_matrix_s *pSrc_s
 #endif
-)__attribute__ ((section(".itcmram"))) ;
+);
 
 
 extern ukfmo_fnc_status_e
@@ -527,7 +591,7 @@ UKFMO_GetCholeskyLow(
 #else
 	ukfmo_matrix_s *pSrc_s
 #endif
-)__attribute__ ((section(".itcmram")));
+)__UKFMO_FNC_LOCATION_IN_SPECIAL_SPACE;
 
 extern ukfmo_fnc_status_e
 UKFMO_MatrixInverse(
@@ -543,7 +607,7 @@ UKFMO_MatrixInverse(
 	ukfmo_matrix_s *pSrc_s,
 	ukfmo_matrix_s *pDst_s
 #endif
-)__attribute__ ((section(".itcmram")));
+)__UKFMO_FNC_LOCATION_IN_SPECIAL_SPACE;
 /*#### |End  | <-- Секция - "Прототипы глобальных функций" ###################*/
 
 

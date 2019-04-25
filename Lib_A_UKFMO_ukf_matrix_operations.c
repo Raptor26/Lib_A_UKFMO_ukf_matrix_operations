@@ -303,7 +303,7 @@ __attribute__((optimize("Ofast")))  __UKFMO_FORCE_INLINE ukfmo_fnc_status_e UKFM
  *                                  выполнить
  * @return  None
  */
-__attribute__((optimize("Ofast"))) ukfmo_fnc_status_e
+ukfmo_fnc_status_e __UKFMO_OPTIMIZE_OFAST
 UKFMO_GetCholeskyLow(
 #if defined(__UKFMO_USE_ARM_MATH__)
 	#if (__UKFMO_FPT_SIZE__)    == 4
