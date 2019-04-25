@@ -170,7 +170,21 @@ UKFMO_MatrixIdentity(
 	return (status_e);
 }
 
-__UKFMO_FORCE_INLINE ukfmo_fnc_status_e
+/*-------------------------------------------------------------------------*//**
+* @author    Mickle Isaev
+* @date      22-апр-2019
+*
+* @brief    Функция находит инверсную матрицу
+*
+* @param[in]   *pSrc_s:  Указатель на структуру матрицы от которой
+*                        необходимо найти инверсную матрицу
+* @param[out]  *pDst_s:  Указатель на структуру матрицы, в которую будет
+*                        записана инверсная матрица
+*
+* @return  Статус операции
+*                 @see ukfmo_fnc_status_e
+*/
+ukfmo_fnc_status_e
 UKFMO_MatrixZeros(
 #if defined(__UKFMO_USE_ARM_MATH__)
 	#if (__UKFMO_FPT_SIZE__)    == 4
@@ -198,7 +212,328 @@ UKFMO_MatrixZeros(
 	return (UKFMO_OK);
 }
 
-__attribute__((optimize("Ofast")))  __UKFMO_FORCE_INLINE ukfmo_fnc_status_e UKFMO_MatrixInverse(
+/*-------------------------------------------------------------------------*//**
+* @author    Mickle Isaev
+* @date      22-апр-2019
+*
+* @brief   Функция выполняет сложение двух матриц
+*
+* @param[in]   *pSrcA_s: Указатель на структуру первой матрицы
+* @param[in]   *pSrcB_s: Указатель на структуру второй матрицы
+* @param[out]  *pDst_s:  Указатель на структуру матрицы, в которую будет
+*                        записан результат сложения матриц
+*
+* @return  Статус операции
+*                @see ukfmo_fnc_status_e
+*/
+__UKFMO_FORCE_INLINE ukfmo_fnc_status_e __UKFMO_OPTIMIZE_OFAST
+UKMO_MatrixAdition(
+#if defined(__UKFMO_USE_ARM_MATH__)
+	#if (__UKFMO_FPT_SIZE__)    == 4
+		arm_matrix_instance_f32 *pSrcA_s,
+		arm_matrix_instance_f32 *pSrcB_s,
+		arm_matrix_instance_f32 *pDst_s
+	#elif (__UKFMO_FPT_SIZE__)  == 8
+		arm_matrix_instance_f64 *pSrcA_s,
+		arm_matrix_instance_f64 *pSrcB_s,
+		arm_matrix_instance_f64 *pDst_s
+	#endif
+#else
+	ukfmo_matrix_s *pSrcA_s,
+	ukfmo_matrix_s *pSrcB_s,
+	ukfmo_matrix_s *pDst_s
+#endif
+)
+{
+	#if defined(__UKFMO_USE_ARM_MATH__)
+	arm_status status_e;
+	#if (__UKFMO_FPT_SIZE__) == 4
+	status_e = arm_mat_add_f32(pSrcA_s, pSrcB_s, pDst_s);
+	#else
+	status_e = arm_mat_add_f64(pSrcA_s, pSrcB_s, pDst_s);
+	#endif
+	#else
+	ukfmo_fnc_status_e status_e = UKFMO_OK;
+	__UKFMO_FPT__ * const pDstL         = (__UKFMO_FPT__ *)pDst_s->pData;
+	__UKFMO_FPT__ const * const pSrcA_  = (__UKFMO_FPT__ *)pSrcA_s->pData;
+	__UKFMO_FPT__ const * const pSrcB_  = (__UKFMO_FPT__ *)pSrcB_s->pData;
+	if ((pSrcA_s->columnNumb == pSrcB_s->columnNumb) && (pSrcA_s->rowNumb == pSrcB_s->rowNumb))
+	{
+		size_t eIdx;
+		for (eIdx = 0; eIdx < pSrcA_s->columnNumb * pSrcA_s->rowNumb; eIdx++)
+		{
+			pDstL[eIdx] = pSrcA_[eIdx] + pSrcB_[eIdx];
+		}
+	}
+	else
+	{
+		status_e = UKFMO_SIZE_MISMATCH;
+	}
+	#endif
+
+	return (status_e);
+}
+
+/*-------------------------------------------------------------------------*//**
+* @author    Mickle Isaev
+* @date      22-апр-2019
+*
+* @brief    Функция выполняет вычитание двух матриц
+*
+* @param[in]   *pSrcA_s: Указатель на структуру первой матрицы
+* @param[in]   *pSrcB_s: Указатель на структуру второй матрицы
+* @param[out]  *pDst_s:  Указатель на структуру матрицы, в которую будет
+*                        записан результат вычитания матриц
+*
+* @return  Статус операции
+*                 @see ukfmo_fnc_status_e
+*
+*/
+__UKFMO_FORCE_INLINE ukfmo_fnc_status_e __UKFMO_OPTIMIZE_OFAST
+UKMO_MatrixSubstraction(
+#if defined(__UKFMO_USE_ARM_MATH__)
+	#if (__UKFMO_FPT_SIZE__)    == 4
+		arm_matrix_instance_f32 *pSrcA_s,
+		arm_matrix_instance_f32 *pSrcB_s,
+		arm_matrix_instance_f32 *pDst_s
+	#elif (__UKFMO_FPT_SIZE__)  == 8
+		arm_matrix_instance_f64 *pSrcA_s,
+		arm_matrix_instance_f64 *pSrcB_s,
+		arm_matrix_instance_f64 *pDst_s
+	#endif
+#else
+	ukfmo_matrix_s *pSrcA_s,
+	ukfmo_matrix_s *pSrcB_s,
+	ukfmo_matrix_s *pDst_s
+#endif
+)
+{
+	#if defined(__UKFMO_USE_ARM_MATH__)
+	arm_status status_e;
+	#if (__UKFMO_FPT_SIZE__) == 4
+	status_e = arm_mat_sub_f32(pSrcA_s, pSrcB_s, pDst_s);
+	#else
+	status_e = arm_mat_sub_f64(pSrcA_s, pSrcB_s, pDst_s);
+	#endif
+	#else
+	ukfmo_fnc_status_e status_e = UKFMO_OK;
+	__UKFMO_FPT__ * const pDstL         = (__UKFMO_FPT__ *)pDst_s->pData;
+	__UKFMO_FPT__ const * const pSrcA_  = (__UKFMO_FPT__ *)pSrcA_s->pData;
+	__UKFMO_FPT__ const * const pSrcB_  = (__UKFMO_FPT__ *)pSrcB_s->pData;
+	if ((pSrcA_s->columnNumb == pSrcB_s->columnNumb) && (pSrcA_s->rowNumb == pSrcB_s->rowNumb))
+	{
+		size_t eIdx;
+		for (eIdx = 0; eIdx < pSrcA_s->columnNumb * pSrcA_s->rowNumb; eIdx++)
+		{
+			pDstL[eIdx] = pSrcA_[eIdx] - pSrcB_[eIdx];
+		}
+	}
+	else
+	{
+		status_e = UKFMO_SIZE_MISMATCH;
+	}
+	#endif
+
+	return (status_e);
+}
+
+/*-------------------------------------------------------------------------*//**
+* @author    Mickle Isaev
+* @date      22-апр-2019
+*
+* @brief    Функция выполняет умножение двух матриц
+*
+* @param[in]   *pSrcA_s: Указатель на структуру первой матрицы
+* @param[in]   *pSrcB_s: Указатель на структуру второй матрицы
+* @param[out]  *pDst_s:  Указатель на структуру матрицы, в которую будет
+*                        записан результат умножения матриц
+*
+* @return  Статус операции
+*                 @see ukfmo_fnc_status_e
+*
+*/
+__UKFMO_FORCE_INLINE ukfmo_fnc_status_e __UKFMO_OPTIMIZE_OFAST
+UKFMO_MatrixMultiplication(
+#if defined(__UKFMO_USE_ARM_MATH__)
+	#if (__UKFMO_FPT_SIZE__)    == 4
+		arm_matrix_instance_f32 *pSrcA_s,
+		arm_matrix_instance_f32 *pSrcB_s,
+		arm_matrix_instance_f32 *pDst_s
+	#elif (__UKFMO_FPT_SIZE__)  == 8
+		arm_matrix_instance_f64 *pSrcA_s,
+		arm_matrix_instance_f64 *pSrcB_s,
+		arm_matrix_instance_f64 *pDst_s
+	#endif
+#else
+	ukfmo_matrix_s *pSrcA_s,
+	ukfmo_matrix_s *pSrcB_s,
+	ukfmo_matrix_s *pDst_s
+#endif
+)
+{
+	#if defined(__UKFMO_USE_ARM_MATH__)
+	arm_status status_e;
+	#if (__UKFMO_FPT_SIZE__) == 4
+	status_e = arm_mat_mult_f32(pSrcA_s, pSrcB_s, pDst_s);
+	#else
+	status_e = arm_mat_mult_f64(pSrcA_s, pSrcB_s, pDst_s);
+	#endif
+	#else
+	ukfmo_fnc_status_e status_e = UKFMO_OK;
+	__UKFMO_FPT__ const * const pSrc1L  = (__UKFMO_FPT__ *)pSrcA_s->pData;
+	__UKFMO_FPT__ const * const pSrc2L  = (__UKFMO_FPT__ *)pSrcB_s->pData;
+	__UKFMO_FPT__ * const pDstL         = (__UKFMO_FPT__ *)pDst_s->pData;
+	size_t row, col, k;
+	__UKFMO_FPT__ sum;
+
+	if (pSrcA_s->columnNumb == pSrcB_s->rowNumb)
+	{
+		for (row = 0; row < pSrcA_s->rowNumb; row++)
+		{
+			for (col = 0; col < pSrcB_s->columnNumb; col++)
+			{
+				sum = 0;
+				for (k = 0; k < pSrcA_s->columnNumb; k++)
+				{
+					sum += pSrc1L[pSrcA_s->columnNumb * row + k] * pSrc2L[pSrcB_s->columnNumb * k + col];
+				}
+				pDstL[pDst_s->columnNumb * row + col] = sum;
+			}
+		}
+	}
+	else
+	{
+		status_e = UKFMO_SIZE_MISMATCH;
+	}
+	#endif
+
+	return (status_e);
+}
+
+/*-------------------------------------------------------------------------*//**
+* @author    Mickle Isaev
+* @date      22-апр-2019
+*
+* @brief    Функция выполняет умножение матрицы на скаляр
+*
+* @param[im]   *pSrc_s:  Указатель на структуру матрицы, которую необходимо
+*                        умножить на скаляр
+* @param[out]  *pDst_s:  Указатель на структуру матрицы, в которую будет
+*                        записан результат умножения матрицы на скаляр
+*
+* @return  Статус операции
+*                 @see ukfmo_fnc_status_e
+*/
+__UKFMO_FORCE_INLINE ukfmo_fnc_status_e __UKFMO_OPTIMIZE_OFAST
+UKFMO_MatrixMultScale(
+#if defined(__UKFMO_USE_ARM_MATH__)
+	#if (__UKFMO_FPT_SIZE__)    == 4
+		arm_matrix_instance_f32 *pSrc_s,
+		__UKFMO_FPT__           scale,
+		arm_matrix_instance_f32 *pDst_s
+	#elif (__UKFMO_FPT_SIZE__)  == 8
+		arm_matrix_instance_f64 *pSrc_s,
+		__UKFMO_FPT__           scale,
+		arm_matrix_instance_f64 *pDst_s
+	#endif
+#else
+	ukfmo_matrix_s *pSrc_s,
+	__UKFMO_FPT__   scale,
+	ukfmo_matrix_s *pDst_s
+#endif
+)
+{
+	#if defined(__UKFMO_USE_ARM_MATH__)
+	arm_status status_e;
+	#if (__UKFMO_FPT_SIZE__) == 4
+	status_e = arm_mat_scale_f32(pSrc_s, scale, pDst_s);
+	#else
+	status_e = arm_mat_scale_f64(pSrc_s, scale, pDst_s);
+	#endif
+	#else
+
+	ukfmo_fnc_status_e status_e = UKFMO_OK;
+	__UKFMO_FPT__ *pDst = (__UKFMO_FPT__ *)pDst_s->pData;
+	size_t eIdx;
+	for (eIdx = 0; eIdx < pSrc_s->columnNumb * pSrc_s->rowNumb; eIdx++)
+	{
+		pDst[eIdx] *= scale;
+	}
+	#endif
+
+	return (status_e);
+}
+
+/*-------------------------------------------------------------------------*//**
+* @author    Mickle Isaev
+* @date      22-апр-2019
+*
+* @brief    Функция выполняет транспонирование матрицы
+*
+* @param[in]   *pSrc_s:  Указатель на структуру матрицы, транспонирование
+*                        которой необходимо выполнить
+* @param[out]  *pDst_s:  Указатель на структуру матрицы, в которую будет
+*                        записана транспонированная матрица
+*
+* @return  Статус операции
+*                 @see ukfmo_fnc_status_e
+*/
+__UKFMO_FORCE_INLINE ukfmo_fnc_status_e __UKFMO_OPTIMIZE_OFAST
+UKFMO_MatrixTranspose(
+#if defined(__UKFMO_USE_ARM_MATH__)
+	#if (__UKFMO_FPT_SIZE__)    == 4
+		arm_matrix_instance_f32 *pSrc_s,
+		arm_matrix_instance_f32 *pDst_s
+	#elif (__UKFMO_FPT_SIZE__)  == 8
+		arm_matrix_instance_f64 *pSrc_s,
+		arm_matrix_instance_f64 *pDst_s
+	#endif
+#else
+	ukfmo_matrix_s *pSrc_s,
+	ukfmo_matrix_s *pDst_s
+#endif
+)
+{
+	#if defined(__UKFMO_USE_ARM_MATH__)
+	arm_status status_e;
+	#if( __UKFMO_FPT_SIZE__) == 4
+	status_e = arm_mat_trans_f32(pSrc_s, pDst_s);
+	#else
+	status_e = arm_mat_trans_f64(pSrc_s, pDst_s);
+	#endif
+
+	#else
+	/* -->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> */
+	__UKFMO_FPT__ const * const pSrcL   = (__UKFMO_FPT__ *)pSrc_s->pData;
+	__UKFMO_FPT__ * const pDstL         = (__UKFMO_FPT__ *)pDst_s->pData;
+	const uint16_t nRowSrcL = pSrc_s->rowNumb;
+	const uint16_t nColSrcL = pSrc_s->columnNumb;
+	const uint16_t nRowDstL = pDst_s->rowNumb;
+	const uint16_t nColDstL = pDst_s->columnNumb;
+	size_t row, col;
+
+	ukfmo_fnc_status_e status_e = UKFMO_OK;
+	if (nRowSrcL == nColDstL || nColSrcL == nRowDstL)
+	{
+		for (row = 0; row < nRowDstL; row++)
+		{
+			for (col = 0; col < nColDstL; col++)
+			{
+				pDstL[nColDstL * row + col] = pSrcL[nColSrcL * col + row];
+			}
+		}
+	}
+	else
+	{
+		status_e = UKFMO_SIZE_MISMATCH;
+	}
+	#endif /* defined(__UKFMO_USE_ARM_MATH__) */
+	/* --<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
+	return (status_e);
+}
+
+__UKFMO_FORCE_INLINE ukfmo_fnc_status_e __UKFMO_OPTIMIZE_OFAST
+UKFMO_MatrixInverse(
 #if defined(__UKFMO_USE_ARM_MATH__)
 	#if (__UKFMO_FPT_SIZE__)    == 4
 		arm_matrix_instance_f32 *pSrc_s,
@@ -303,7 +638,7 @@ __attribute__((optimize("Ofast")))  __UKFMO_FORCE_INLINE ukfmo_fnc_status_e UKFM
  *                                  выполнить
  * @return  None
  */
-ukfmo_fnc_status_e __UKFMO_OPTIMIZE_OFAST
+__UKFMO_FORCE_INLINE ukfmo_fnc_status_e __UKFMO_OPTIMIZE_OFAST
 UKFMO_GetCholeskyLow(
 #if defined(__UKFMO_USE_ARM_MATH__)
 	#if (__UKFMO_FPT_SIZE__)    == 4
