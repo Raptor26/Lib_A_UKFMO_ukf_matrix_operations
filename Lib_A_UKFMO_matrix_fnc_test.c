@@ -48,6 +48,35 @@ UKFMOTEST_MATRIX_S UKFMOTEST_matrixC_s __attribute__ ((section("._user_heap_stac
 //__UKFMO_FPT__ UKFMOTEST_matrixC_a[UKFMOTEST_MATRIX_ROW][UKFMOTEST_MATRIX_COLUMN];
 //UKFMOTEST_MATRIX_S UKFMOTEST_matrixC_s;
 
+
+__UKFMO_FPT__ UKFMOTEST_matrixAddition_a2[UKFMOTEST_MATRIX_ROW][UKFMOTEST_MATRIX_COLUMN] __attribute__ ((section("._user_heap_stack")));
+UKFMOTEST_MATRIX_S UKFMOTEST_matrixAddition_s __attribute__ ((section("._user_heap_stack")));
+uint32_t UKFMOTEST_matrixAdditionRunTime;
+
+__UKFMO_FPT__ UKFMOTEST_matrixSub_a2[UKFMOTEST_MATRIX_ROW][UKFMOTEST_MATRIX_COLUMN] __attribute__ ((section("._user_heap_stack")));
+UKFMOTEST_MATRIX_S UKFMOTEST_matrixSub_s __attribute__ ((section("._user_heap_stack")));
+uint32_t UKFMOTEST_matrixSubRunTime;
+
+__UKFMO_FPT__ UKFMOTEST_matrixMult_a2[UKFMOTEST_MATRIX_ROW][UKFMOTEST_MATRIX_COLUMN] __attribute__ ((section("._user_heap_stack")));
+UKFMOTEST_MATRIX_S UKFMOTEST_matrixMult_s __attribute__ ((section("._user_heap_stack")));
+uint32_t UKFMOTEST_matrixMultRunTime;
+
+__UKFMO_FPT__ UKFMOTEST_matrixMultScale_a2[UKFMOTEST_MATRIX_ROW][UKFMOTEST_MATRIX_COLUMN] __attribute__ ((section("._user_heap_stack")));
+UKFMOTEST_MATRIX_S UKFMOTEST_matrixMultScale_s __attribute__ ((section("._user_heap_stack")));
+uint32_t UKFMOTEST_matrixMultScaleRunTime;
+
+__UKFMO_FPT__ UKFMOTEST_matrixTranspose_a2[UKFMOTEST_MATRIX_ROW][UKFMOTEST_MATRIX_COLUMN] __attribute__ ((section("._user_heap_stack")));
+UKFMOTEST_MATRIX_S UKFMOTEST_matrixTranspose_s __attribute__ ((section("._user_heap_stack")));
+uint32_t UKFMOTEST_matrixTransposeRunTime;
+
+__UKFMO_FPT__ UKFMOTEST_matrixInv_a2[UKFMOTEST_MATRIX_ROW][UKFMOTEST_MATRIX_COLUMN] __attribute__ ((section("._user_heap_stack")));
+UKFMOTEST_MATRIX_S UKFMOTEST_matrixInv_s __attribute__ ((section("._user_heap_stack")));
+uint32_t UKFMOTEST_matrixInvRunTime;
+
+__UKFMO_FPT__ UKFMOTEST_matrixCholLow_a2[UKFMOTEST_MATRIX_ROW][UKFMOTEST_MATRIX_COLUMN] __attribute__ ((section("._user_heap_stack")));
+UKFMOTEST_MATRIX_S UKFMOTEST_matrixCholLow_s __attribute__ ((section("._user_heap_stack")));
+uint32_t UKFMOTEST_matrixCholLowRunTime;
+
 vtrm_tmr_s UKFMOTEST_vTMR_s ;
 
 uint32_t UKFMOTEST_choleskyRunTime;
@@ -176,6 +205,95 @@ UKFMOTEST_Test(void)
 //		&UKFMOTEST_matrixB_s,
 //		&UKFMOTEST_initialMatrix_s,
 //		&UKFMOTEST_initialMatrix_s);
+}
+
+void
+UKFMOTEST_Test7x7(void)
+{
+	vtrm_tmr_init_s tmrInit_s;
+		VTMR_StructInit(&tmrInit_s);
+		tmrInit_s.pHighCntReg = HC32_UPPER_CNT_FOR_VTMR;
+		tmrInit_s.pLowCntReg = HC32_LOWER_CNT_FOR_VTMR;
+		VTMR_Init(&UKFMOTEST_vTMR_s, &tmrInit_s);
+
+	/* Инициализация всех матриц */
+	UKFMO_MatrixInit(
+		&UKFMOTEST_matrixAddition_s,
+		UKFMOTEST_MATRIX_ROW,
+		UKFMOTEST_MATRIX_COLUMN,
+		(__UKFMO_FPT__*) UKFMOTEST_matrixAddition_a2);
+
+	UKFMO_MatrixInit(
+		&UKFMOTEST_matrixSub_s,
+		UKFMOTEST_MATRIX_ROW,
+		UKFMOTEST_MATRIX_COLUMN,
+		(__UKFMO_FPT__*) UKFMOTEST_matrixSub_a2);
+
+	UKFMO_MatrixInit(
+		&UKFMOTEST_matrixMult_s,
+		UKFMOTEST_MATRIX_ROW,
+		UKFMOTEST_MATRIX_COLUMN,
+		(__UKFMO_FPT__*) UKFMOTEST_matrixMult_a2);
+
+	UKFMO_MatrixInit(
+		&UKFMOTEST_matrixMultScale_s,
+		UKFMOTEST_MATRIX_ROW,
+		UKFMOTEST_MATRIX_COLUMN,
+		(__UKFMO_FPT__*) UKFMOTEST_matrixMultScale_a2);
+
+	UKFMO_MatrixInit(
+		&UKFMOTEST_matrixTranspose_s,
+		UKFMOTEST_MATRIX_ROW,
+		UKFMOTEST_MATRIX_COLUMN,
+		(__UKFMO_FPT__*) UKFMOTEST_matrixTranspose_a2);
+
+	UKFMO_MatrixInit(
+		&UKFMOTEST_matrixInv_s,
+		UKFMOTEST_MATRIX_ROW,
+		UKFMOTEST_MATRIX_COLUMN,
+		(__UKFMO_FPT__*) UKFMOTEST_matrixInv_a2);
+
+	UKFMO_MatrixInit(
+		&UKFMOTEST_matrixCholLow_s,
+		UKFMOTEST_MATRIX_ROW,
+		UKFMOTEST_MATRIX_COLUMN,
+		(__UKFMO_FPT__*) UKFMOTEST_matrixCholLow_a2);
+
+	/* Замер времени выполнения */
+	VTMR_StartTimer(&UKFMOTEST_vTMR_s);
+	UKFMO_GetCholeskyLow(&UKFMOTEST_matrixCholLow_s);
+	UKFMOTEST_matrixCholLowRunTime =
+		VTMR_GetTimerValue(&UKFMOTEST_vTMR_s);
+
+	VTMR_StartTimer(&UKFMOTEST_vTMR_s);
+	UKFMO_MatrixInverse(&UKFMOTEST_matrixCholLow_s, &UKFMOTEST_matrixInv_s);
+	UKFMOTEST_matrixInvRunTime =
+		VTMR_GetTimerValue(&UKFMOTEST_vTMR_s);
+
+	VTMR_StartTimer(&UKFMOTEST_vTMR_s);
+	UKFMO_MatrixTranspose(&UKFMOTEST_matrixInv_s, &UKFMOTEST_matrixTranspose_s);
+	UKFMOTEST_matrixTransposeRunTime =
+		VTMR_GetTimerValue(&UKFMOTEST_vTMR_s);
+
+	VTMR_StartTimer(&UKFMOTEST_vTMR_s);
+	UKFMO_MatrixMultScale(&UKFMOTEST_matrixTranspose_s, (__UKFMO_FPT__) 0.5, &UKFMOTEST_matrixMultScale_s);
+	UKFMOTEST_matrixMultScaleRunTime =
+		VTMR_GetTimerValue(&UKFMOTEST_vTMR_s);
+
+	VTMR_StartTimer(&UKFMOTEST_vTMR_s);
+	UKFMO_MatrixMultiplication(&UKFMOTEST_matrixTranspose_s, &UKFMOTEST_matrixMultScale_s, &UKFMOTEST_matrixMult_s);
+	UKFMOTEST_matrixMultRunTime =
+		VTMR_GetTimerValue(&UKFMOTEST_vTMR_s);
+
+	VTMR_StartTimer(&UKFMOTEST_vTMR_s);
+	UKMO_MatrixSubstraction(&UKFMOTEST_matrixTranspose_s, &UKFMOTEST_matrixMult_s, &UKFMOTEST_matrixSub_s);
+	UKFMOTEST_matrixSubRunTime =
+		VTMR_GetTimerValue(&UKFMOTEST_vTMR_s);
+
+	VTMR_StartTimer(&UKFMOTEST_vTMR_s);
+	UKMO_MatrixAdition(&UKFMOTEST_matrixTranspose_s, &UKFMOTEST_matrixMult_s, &UKFMOTEST_matrixAddition_s);
+	UKFMOTEST_matrixAdditionRunTime =
+		VTMR_GetTimerValue(&UKFMOTEST_vTMR_s);
 }
 /*#### |End  | <-- Секция - "Описание глобальных функций" ####################*/
 
