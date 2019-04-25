@@ -8,7 +8,7 @@
 
 
 /*#### |Begin| --> Секция - "Include" ########################################*/
-#include "Lib_A_UKFMO_ukf_matrix_operations.h"
+#include "Lib_A_UKFMO_matrix_fnc_test.h"
 /*#### |End  | <-- Секция - "Include" ########################################*/
 
 #define UKFMOTEST_MATRIX_ROW				7u
@@ -23,17 +23,35 @@
 	#define UKFMOTEST_MATRIX_S ukfmo_matrix_s
 #endif
 /*#### |Begin| --> Секция - "Глобальные переменные" ##########################*/
-__UKFMO_FPT__ UKFMOTEST_initialMatrix_a[UKFMOTEST_MATRIX_ROW][UKFMOTEST_MATRIX_COLUMN];
-UKFMOTEST_MATRIX_S UKFMOTEST_initialMatrix_s;
+__UKFMO_FPT__ UKFMOTEST_initialMatrix_a[UKFMOTEST_MATRIX_ROW][UKFMOTEST_MATRIX_COLUMN] __attribute__ ((section("._user_heap_stack")));
+UKFMOTEST_MATRIX_S UKFMOTEST_initialMatrix_s __attribute__ ((section("._user_heap_stack")));
 
-__UKFMO_FPT__ UKFMOTEST_matrixA_a[UKFMOTEST_MATRIX_ROW][UKFMOTEST_MATRIX_COLUMN];
-UKFMOTEST_MATRIX_S UKFMOTEST_matrixA_s;
+__UKFMO_FPT__ UKFMOTEST_matrixA_a[UKFMOTEST_MATRIX_ROW][UKFMOTEST_MATRIX_COLUMN] __attribute__ ((section("._user_heap_stack")));
+UKFMOTEST_MATRIX_S UKFMOTEST_matrixA_s __attribute__ ((section("._user_heap_stack")));
 
 __UKFMO_FPT__ UKFMOTEST_matrixB_a[UKFMOTEST_MATRIX_ROW][UKFMOTEST_MATRIX_COLUMN];
-UKFMOTEST_MATRIX_S UKFMOTEST_matrixB_s;
+UKFMOTEST_MATRIX_S UKFMOTEST_matrixB_s __attribute__ ((section("._user_heap_stack")));
 
-__UKFMO_FPT__ UKFMOTEST_matrixC_a[UKFMOTEST_MATRIX_ROW][UKFMOTEST_MATRIX_COLUMN];
-UKFMOTEST_MATRIX_S UKFMOTEST_matrixC_s;
+__UKFMO_FPT__ UKFMOTEST_matrixC_a[UKFMOTEST_MATRIX_ROW][UKFMOTEST_MATRIX_COLUMN] __attribute__ ((section("._user_heap_stack")));
+UKFMOTEST_MATRIX_S UKFMOTEST_matrixC_s __attribute__ ((section("._user_heap_stack")));
+
+
+//__UKFMO_FPT__ UKFMOTEST_initialMatrix_a[UKFMOTEST_MATRIX_ROW][UKFMOTEST_MATRIX_COLUMN];
+//UKFMOTEST_MATRIX_S UKFMOTEST_initialMatrix_s;
+//
+//__UKFMO_FPT__ UKFMOTEST_matrixA_a[UKFMOTEST_MATRIX_ROW][UKFMOTEST_MATRIX_COLUMN];
+//UKFMOTEST_MATRIX_S UKFMOTEST_matrixA_s;
+//
+//__UKFMO_FPT__ UKFMOTEST_matrixB_a[UKFMOTEST_MATRIX_ROW][UKFMOTEST_MATRIX_COLUMN];
+//UKFMOTEST_MATRIX_S UKFMOTEST_matrixB_s;
+//
+//__UKFMO_FPT__ UKFMOTEST_matrixC_a[UKFMOTEST_MATRIX_ROW][UKFMOTEST_MATRIX_COLUMN];
+//UKFMOTEST_MATRIX_S UKFMOTEST_matrixC_s;
+
+vtrm_tmr_s UKFMOTEST_vTMR_s ;
+
+uint32_t UKFMOTEST_choleskyRunTime;
+uint32_t UKFMOTEST_InverseRunTime;
 /*#### |End  | <-- Секция - "Глобальные переменные" ##########################*/
 
 
@@ -49,6 +67,14 @@ UKFMOTEST_MATRIX_S UKFMOTEST_matrixC_s;
 void
 UKFMOTEST_Test(void)
 {
+	vtrm_tmr_init_s tmrInit_s;
+	VTMR_StructInit(&tmrInit_s);
+	tmrInit_s.pHighCntReg = HC32_UPPER_CNT_FOR_VTMR;
+	tmrInit_s.pLowCntReg = HC32_LOWER_CNT_FOR_VTMR;
+	VTMR_Init(&UKFMOTEST_vTMR_s, &tmrInit_s);
+
+//	VTMR_StartTimer(&UKFMOTEST_vTMR_s);
+
 	UKFMO_MatrixInit(
 		&UKFMOTEST_initialMatrix_s,
 		UKFMOTEST_MATRIX_ROW,
@@ -133,12 +159,17 @@ UKFMOTEST_Test(void)
 	UKFMOTEST_matrixC_a[6][6] = 0.514428619342896;
 
 	/* step9 */
-
+	VTMR_StartTimer(&UKFMOTEST_vTMR_s);
 	UKFMO_MatrixInverse(
 		&UKFMOTEST_matrixC_s,
 		&UKFMOTEST_matrixB_s);
+	UKFMOTEST_InverseRunTime =
+		VTMR_GetTimerValue(&UKFMOTEST_vTMR_s);
 
+	VTMR_StartTimer(&UKFMOTEST_vTMR_s);
 	UKFMO_GetCholeskyLow(&UKFMOTEST_matrixB_s);
+	UKFMOTEST_choleskyRunTime =
+		VTMR_GetTimerValue(&UKFMOTEST_vTMR_s);
 
 	/* step10 */
 //	UKMO_MatrixSubstraction(

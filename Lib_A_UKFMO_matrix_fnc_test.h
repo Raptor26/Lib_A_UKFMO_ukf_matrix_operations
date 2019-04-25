@@ -19,6 +19,9 @@
 /*==== |End  | <-- Секция - "MK peripheral libraries" ========================*/
 
 /*==== |Begin| --> Секция - "Extern libraries" ===============================*/
+#include "Lib_A_UKFMO_ukf_matrix_operations.h"
+#include "HC32_hard_cnt_32bits/HC32_hard_cnt_32bits.h"
+#include "Lib_A_VTMR_virtual_timers/Lib_A_VTMR_virtual_timers.h"
 /*==== |End  | <-- Секция - "Extern libraries" ===============================*/
 /*#### |End  | <-- Секция - "Include" ########################################*/
 
