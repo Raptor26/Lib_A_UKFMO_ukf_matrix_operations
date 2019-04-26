@@ -179,7 +179,17 @@ typedef struct
 #else
 	#error "Please, define compiler"
 #endif
-ukfmo_matrix_s;
+ukfmo_matrix_data_s;
+
+#if defined(__UKFMO_USE_ARM_MATH__)
+	#if (__UKFMO_FPT_SIZE__)    == 4
+		#define ukfmo_matrix_s      arm_matrix_instance_f32
+	#elif (__UKFMO_FPT_SIZE__)  == 8
+		#define ukfmo_matrix_s      arm_matrix_instance_f64
+	#endif
+#else
+	#define ukfmo_matrix_s      ukfmo_matrix_data_s
+#endif
 /*#### |End  | <-- Секция - "Определение типов" ##############################*/
 
 
@@ -203,6 +213,22 @@ UKFMO_MatrixInit(
 	size_t rowNumb,
 	size_t columnNumb,
 	__UKFMO_FPT__ *pMatrix
+);
+
+extern ukfmo_fnc_status_e
+UKFMO_CopyParams(
+#if defined(__UKFMO_USE_ARM_MATH__)
+	#if (__UKFMO_FPT_SIZE__)    == 4
+		arm_matrix_instance_f32 *pDst_s,
+		arm_matrix_instance_f32 *pSrc_s
+	#elif (__UKFMO_FPT_SIZE__)  == 8
+		arm_matrix_instance_f64 *pDst_s,
+		arm_matrix_instance_f64 *pSrc_s
+	#endif
+#else
+	ukfmo_matrix_s *pDst_s,
+	ukfmo_matrix_s *pSrc_s
+#endif
 );
 
 extern ukfmo_fnc_status_e

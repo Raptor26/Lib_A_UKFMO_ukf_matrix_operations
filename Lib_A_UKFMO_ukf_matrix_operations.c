@@ -73,9 +73,37 @@ UKFMO_MatrixInit(
 	#endif
 	#else
 	p_s->numRows 		= rowNumb;
-	p_s->numCols 	= columnNumb;
+	p_s->numCols 		= columnNumb;
 	p_s->pData 			= pMatrix;
 	#endif
+	return (UKFMO_OK);
+}
+
+ukfmo_fnc_status_e
+UKFMO_CopyParams(
+#if defined(__UKFMO_USE_ARM_MATH__)
+	#if (__UKFMO_FPT_SIZE__) 	== 4
+		arm_matrix_instance_f32 *pDst_s,
+		arm_matrix_instance_f32 *pSrc_s
+	#elif (__UKFMO_FPT_SIZE__) 	== 8
+		arm_matrix_instance_f64 *pDst_s,
+		arm_matrix_instance_f64 *pSrc_s
+	#endif
+#else
+	ukfmo_matrix_s *pDst_s,
+	ukfmo_matrix_s *pSrc_s
+#endif
+)
+{
+#if defined(__UKFMO_USE_ARM_MATH__)
+	pDst_s->numCols 	= pSrc_s->numCols;
+	pDst_s->numRows 	= pSrc_s->numRows;
+	pDst_s->pData 		= pSrc_s->pData;
+#else
+	pDst_s->numCols 	= pSrc_s->numCols;
+	pDst_s->numRows 	= pSrc_s->numRows;
+	pDst_s->pData 		= pSrc_s->pData;
+#endif
 	return (UKFMO_OK);
 }
 
