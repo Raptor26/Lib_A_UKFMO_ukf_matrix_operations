@@ -67,13 +67,13 @@ UKFMO_MatrixInit(
 	#else
 	arm_mat_init_f64(
 		p_s,
-		rowNumb,
-		columnNumb,
+		numRows,
+		numCols,
 		pMatrix);
 	#endif
 	#else
-	p_s->rowNumb 		= rowNumb;
-	p_s->columnNumb 	= columnNumb;
+	p_s->numRows 		= rowNumb;
+	p_s->numCols 	= columnNumb;
 	p_s->pData 			= pMatrix;
 	#endif
 	return (UKFMO_OK);
@@ -100,7 +100,7 @@ UKFMO_MatrixOnes(
 	}
 	#else
 	size_t i;
-	for (i = 0; i < pSrc_s->columnNumb * pSrc_s->rowNumb; i++)
+	for (i = 0; i < pSrc_s->numCols * pSrc_s->numRows; i++)
 	{
 		pSrc_s->pData[i] = (__UKFMO_FPT__) 1.0;
 	}
@@ -146,15 +146,15 @@ UKFMO_MatrixIdentity(
 
 	#else
 	__UKFMO_FPT__ * const pDst = (__UKFMO_FPT__ *)pSrc_s->pData;
-	const size_t nCol = pSrc_s->columnNumb;
+	const size_t nCol = pSrc_s->numCols;
 	size_t eIdx;
 
 	ukfmo_fnc_status_e status_e = UKFMO_OK;
-	if (pSrc_s->rowNumb == nCol)
+	if (pSrc_s->numRows == nCol)
 	{
 		pDst[0] = 1;
 
-		for (eIdx = 1; eIdx < pSrc_s->rowNumb * pSrc_s->columnNumb; eIdx++)
+		for (eIdx = 1; eIdx < pSrc_s->numRows * pSrc_s->numCols; eIdx++)
 		{
 			const size_t cmpLeft = (size_t)(eIdx / nCol);
 
@@ -206,7 +206,7 @@ UKFMO_MatrixZeros(
 	memset(
 		(void*) pSrc_s->pData,
 		0,
-		sizeof(__UKFMO_FPT_SIZE__) * pSrc_s->columnNumb * pSrc_s->rowNumb);
+		sizeof(__UKFMO_FPT_SIZE__) * pSrc_s->numCols * pSrc_s->numRows);
 	#endif
 
 	return (UKFMO_OK);
@@ -257,10 +257,10 @@ UKMO_MatrixAdition(
 	__UKFMO_FPT__ * const pDstL         = (__UKFMO_FPT__ *)pDst_s->pData;
 	__UKFMO_FPT__ const * const pSrcA_  = (__UKFMO_FPT__ *)pSrcA_s->pData;
 	__UKFMO_FPT__ const * const pSrcB_  = (__UKFMO_FPT__ *)pSrcB_s->pData;
-	if ((pSrcA_s->columnNumb == pSrcB_s->columnNumb) && (pSrcA_s->rowNumb == pSrcB_s->rowNumb))
+	if ((pSrcA_s->numCols == pSrcB_s->numCols) && (pSrcA_s->numRows == pSrcB_s->numRows))
 	{
 		size_t eIdx;
-		for (eIdx = 0; eIdx < pSrcA_s->columnNumb * pSrcA_s->rowNumb; eIdx++)
+		for (eIdx = 0; eIdx < pSrcA_s->numCols * pSrcA_s->numRows; eIdx++)
 		{
 			pDstL[eIdx] = pSrcA_[eIdx] + pSrcB_[eIdx];
 		}
@@ -320,10 +320,10 @@ UKMO_MatrixSubstraction(
 	__UKFMO_FPT__ * const pDstL         = (__UKFMO_FPT__ *)pDst_s->pData;
 	__UKFMO_FPT__ const * const pSrcA_  = (__UKFMO_FPT__ *)pSrcA_s->pData;
 	__UKFMO_FPT__ const * const pSrcB_  = (__UKFMO_FPT__ *)pSrcB_s->pData;
-	if ((pSrcA_s->columnNumb == pSrcB_s->columnNumb) && (pSrcA_s->rowNumb == pSrcB_s->rowNumb))
+	if ((pSrcA_s->numCols == pSrcB_s->numCols) && (pSrcA_s->numRows == pSrcB_s->numRows))
 	{
 		size_t eIdx;
-		for (eIdx = 0; eIdx < pSrcA_s->columnNumb * pSrcA_s->rowNumb; eIdx++)
+		for (eIdx = 0; eIdx < pSrcA_s->numCols * pSrcA_s->numRows; eIdx++)
 		{
 			pDstL[eIdx] = pSrcA_[eIdx] - pSrcB_[eIdx];
 		}
@@ -386,18 +386,18 @@ UKFMO_MatrixMultiplication(
 	size_t row, col, k;
 	__UKFMO_FPT__ sum;
 
-	if (pSrcA_s->columnNumb == pSrcB_s->rowNumb)
+	if (pSrcA_s->numCols == pSrcB_s->numRows)
 	{
-		for (row = 0; row < pSrcA_s->rowNumb; row++)
+		for (row = 0; row < pSrcA_s->numRows; row++)
 		{
-			for (col = 0; col < pSrcB_s->columnNumb; col++)
+			for (col = 0; col < pSrcB_s->numCols; col++)
 			{
 				sum = 0;
-				for (k = 0; k < pSrcA_s->columnNumb; k++)
+				for (k = 0; k < pSrcA_s->numCols; k++)
 				{
-					sum += pSrc1L[pSrcA_s->columnNumb * row + k] * pSrc2L[pSrcB_s->columnNumb * k + col];
+					sum += pSrc1L[pSrcA_s->numCols * row + k] * pSrc2L[pSrcB_s->numCols * k + col];
 				}
-				pDstL[pDst_s->columnNumb * row + col] = sum;
+				pDstL[pDst_s->numCols * row + col] = sum;
 			}
 		}
 	}
@@ -455,7 +455,7 @@ UKFMO_MatrixMultScale(
 	ukfmo_fnc_status_e status_e = UKFMO_OK;
 	__UKFMO_FPT__ *pDst = (__UKFMO_FPT__ *)pDst_s->pData;
 	size_t eIdx;
-	for (eIdx = 0; eIdx < pSrc_s->columnNumb * pSrc_s->rowNumb; eIdx++)
+	for (eIdx = 0; eIdx < pSrc_s->numCols * pSrc_s->numRows; eIdx++)
 	{
 		pDst[eIdx] *= scale;
 	}
@@ -506,10 +506,10 @@ UKFMO_MatrixTranspose(
 	/* -->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> */
 	__UKFMO_FPT__ const * const pSrcL   = (__UKFMO_FPT__ *)pSrc_s->pData;
 	__UKFMO_FPT__ * const pDstL         = (__UKFMO_FPT__ *)pDst_s->pData;
-	const uint16_t nRowSrcL = pSrc_s->rowNumb;
-	const uint16_t nColSrcL = pSrc_s->columnNumb;
-	const uint16_t nRowDstL = pDst_s->rowNumb;
-	const uint16_t nColDstL = pDst_s->columnNumb;
+	const uint16_t nRowSrcL = pSrc_s->numRows;
+	const uint16_t nColSrcL = pSrc_s->numCols;
+	const uint16_t nRowDstL = pDst_s->numRows;
+	const uint16_t nColDstL = pDst_s->numCols;
 	size_t row, col;
 
 	ukfmo_fnc_status_e status_e = UKFMO_OK;
@@ -557,8 +557,8 @@ UKFMO_MatrixInverse(
 	#endif
 	#else
 	ukfmo_fnc_status_e status_e = UKFMO_OK;
-	const size_t nrow = pSrc_s->rowNumb;
-	const size_t ncol = pSrc_s->columnNumb;
+	const size_t nrow = pSrc_s->numRows;
+	const size_t ncol = pSrc_s->numCols;
 	size_t j, i;
 	size_t k = 0;
 	size_t l = 0;
@@ -660,8 +660,8 @@ UKFMO_GetCholeskyLow(
 	const size_t nrow = pSrc_s->numRows;
 	const size_t ncol = pSrc_s->numCols;
 	#else
-	const size_t nrow = pSrc_s->rowNumb;
-	const size_t ncol = pSrc_s->columnNumb;
+	const size_t nrow = pSrc_s->numRows;
+	const size_t ncol = pSrc_s->numCols;
 	#endif
 
 	if (ncol == nrow)

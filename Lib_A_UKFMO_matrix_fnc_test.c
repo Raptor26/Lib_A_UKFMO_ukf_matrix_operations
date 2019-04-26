@@ -10,7 +10,7 @@
 /*#### |Begin| --> Секция - "Include" ########################################*/
 #include "Lib_A_UKFMO_matrix_fnc_test.h"
 /*#### |End  | <-- Секция - "Include" ########################################*/
-
+#if defined (__UKFMOTEST_ENABLE__)
 #define UKFMOTEST_MATRIX_ROW				7u
 #define UKFMOTEST_MATRIX_COLUMN				7u
 #if defined(__UKFMO_USE_ARM_MATH__)
@@ -81,6 +81,7 @@ vtrm_tmr_s UKFMOTEST_vTMR_s ;
 
 uint32_t UKFMOTEST_choleskyRunTime;
 uint32_t UKFMOTEST_InverseRunTime;
+#endif
 /*#### |End  | <-- Секция - "Глобальные переменные" ##########################*/
 
 
@@ -96,6 +97,7 @@ uint32_t UKFMOTEST_InverseRunTime;
 void
 UKFMOTEST_Test(void)
 {
+#if defined (__UKFMOTEST_ENABLE__)
 	vtrm_tmr_init_s tmrInit_s;
 	VTMR_StructInit(&tmrInit_s);
 	tmrInit_s.pHighCntReg = HC32_UPPER_CNT_FOR_VTMR;
@@ -205,11 +207,13 @@ UKFMOTEST_Test(void)
 //		&UKFMOTEST_matrixB_s,
 //		&UKFMOTEST_initialMatrix_s,
 //		&UKFMOTEST_initialMatrix_s);
+#endif
 }
 
 void
 UKFMOTEST_Test7x7(void)
 {
+#if defined (__UKFMOTEST_ENABLE__)
 	vtrm_tmr_init_s tmrInit_s;
 		VTMR_StructInit(&tmrInit_s);
 		tmrInit_s.pHighCntReg = HC32_UPPER_CNT_FOR_VTMR;
@@ -294,6 +298,7 @@ UKFMOTEST_Test7x7(void)
 	UKMO_MatrixAdition(&UKFMOTEST_matrixTranspose_s, &UKFMOTEST_matrixMult_s, &UKFMOTEST_matrixAddition_s);
 	UKFMOTEST_matrixAdditionRunTime =
 		VTMR_GetTimerValue(&UKFMOTEST_vTMR_s);
+#endif
 }
 /*#### |End  | <-- Секция - "Описание глобальных функций" ####################*/
 

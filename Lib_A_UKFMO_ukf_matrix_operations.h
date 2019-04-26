@@ -170,9 +170,9 @@ typedef enum
 
 typedef struct
 {
+	uint16_t        numRows;
+	uint16_t        numCols;
 	__UKFMO_FPT__   *pData;
-	uint16_t        rowNumb;
-	uint16_t        columnNumb;
 }
 #if defined (__GNUC__)
 	__attribute__((__packed__))
