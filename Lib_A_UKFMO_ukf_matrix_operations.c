@@ -710,17 +710,17 @@ UKFMO_GetCholeskyLow(
 				pSrcL[ncol * row + col] = (row == col) ? __UKFMO_sqrt(sum) : (row > col) ? (sum / pSrcL[ncol * col + col]) : 0;
 
 
-//				if ((row == col) && (sum <= 0))
-//				{
-//					status_e = UKFMO_NOT_POS_DEFINED;
-//				}
+				if ((row == col) && (sum <= 0))
+				{
+					status_e = UKFMO_NOT_POS_DEFINED;
+				}
 			}
 		}
 	}
-//	else
-//	{
-//		status_e = UKFMO_NOT_SQUARE;
-//	}
+	else
+	{
+		status_e = UKFMO_NOT_SQUARE;
+	}
 
 	return (status_e);
 }
