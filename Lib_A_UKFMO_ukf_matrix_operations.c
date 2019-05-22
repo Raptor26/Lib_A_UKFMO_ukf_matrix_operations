@@ -254,7 +254,7 @@ UKFMO_MatrixZeros(
 * @return  Статус операции
 *                @see ukfmo_fnc_status_e
 */
-__UKFMO_FORCE_INLINE ukfmo_fnc_status_e __UKFMO_OPTIMIZE_OFAST
+__UKFMO_FORCE_INLINE ukfmo_fnc_status_e __PREFIX_FNC_OPTIMIZE_MODE
 UKMO_MatrixAdition(
 #if defined(__UKFMO_USE_ARM_MATH__)
 	#if (__UKFMO_FPT_SIZE__)    == 4
@@ -317,7 +317,7 @@ UKMO_MatrixAdition(
 *                 @see ukfmo_fnc_status_e
 *
 */
-__UKFMO_FORCE_INLINE ukfmo_fnc_status_e __UKFMO_OPTIMIZE_OFAST
+__UKFMO_FORCE_INLINE ukfmo_fnc_status_e __PREFIX_FNC_OPTIMIZE_MODE
 UKMO_MatrixSubstraction(
 #if defined(__UKFMO_USE_ARM_MATH__)
 	#if (__UKFMO_FPT_SIZE__)    == 4
@@ -380,7 +380,7 @@ UKMO_MatrixSubstraction(
 *                 @see ukfmo_fnc_status_e
 *
 */
-__UKFMO_FORCE_INLINE ukfmo_fnc_status_e __UKFMO_OPTIMIZE_OFAST
+__UKFMO_FORCE_INLINE ukfmo_fnc_status_e __PREFIX_FNC_OPTIMIZE_MODE
 UKFMO_MatrixMultiplication(
 #if defined(__UKFMO_USE_ARM_MATH__)
 	#if (__UKFMO_FPT_SIZE__)    == 4
@@ -452,7 +452,7 @@ UKFMO_MatrixMultiplication(
 * @return  Статус операции
 *                 @see ukfmo_fnc_status_e
 */
-__UKFMO_FORCE_INLINE ukfmo_fnc_status_e __UKFMO_OPTIMIZE_OFAST
+__UKFMO_FORCE_INLINE ukfmo_fnc_status_e __PREFIX_FNC_OPTIMIZE_MODE
 UKFMO_MatrixMultScale(
 #if defined(__UKFMO_USE_ARM_MATH__)
 	#if (__UKFMO_FPT_SIZE__)    == 4
@@ -482,10 +482,11 @@ UKFMO_MatrixMultScale(
 
 	ukfmo_fnc_status_e status_e = UKFMO_OK;
 	__UKFMO_FPT__ *pDst = (__UKFMO_FPT__ *)pDst_s->pData;
+	__UKFMO_FPT__ *pSrc = (__UKFMO_FPT__ *)pSrc_s->pData;
 	size_t eIdx;
 	for (eIdx = 0; eIdx < pSrc_s->numCols * pSrc_s->numRows; eIdx++)
 	{
-		pDst[eIdx] *= scale;
+		pDst[eIdx] = pSrc[eIdx] * scale;
 	}
 	#endif
 
@@ -506,7 +507,7 @@ UKFMO_MatrixMultScale(
 * @return  Статус операции
 *                 @see ukfmo_fnc_status_e
 */
-__UKFMO_FORCE_INLINE ukfmo_fnc_status_e __UKFMO_OPTIMIZE_OFAST
+__UKFMO_FORCE_INLINE ukfmo_fnc_status_e __PREFIX_FNC_OPTIMIZE_MODE
 UKFMO_MatrixTranspose(
 #if defined(__UKFMO_USE_ARM_MATH__)
 	#if (__UKFMO_FPT_SIZE__)    == 4
@@ -560,7 +561,7 @@ UKFMO_MatrixTranspose(
 	return (status_e);
 }
 
-__UKFMO_FORCE_INLINE ukfmo_fnc_status_e __UKFMO_OPTIMIZE_OFAST
+__UKFMO_FORCE_INLINE ukfmo_fnc_status_e __PREFIX_FNC_OPTIMIZE_MODE
 UKFMO_MatrixInverse(
 #if defined(__UKFMO_USE_ARM_MATH__)
 	#if (__UKFMO_FPT_SIZE__)    == 4
@@ -666,7 +667,7 @@ UKFMO_MatrixInverse(
  *                                  выполнить
  * @return  None
  */
-__UKFMO_FORCE_INLINE ukfmo_fnc_status_e __UKFMO_OPTIMIZE_OFAST
+__UKFMO_FORCE_INLINE ukfmo_fnc_status_e __PREFIX_FNC_OPTIMIZE_MODE
 UKFMO_GetCholeskyLow(
 #if defined(__UKFMO_USE_ARM_MATH__)
 	#if (__UKFMO_FPT_SIZE__)    == 4

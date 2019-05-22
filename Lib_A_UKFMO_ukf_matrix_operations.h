@@ -25,7 +25,9 @@
 /*==== |End  | <-- Секция - "MK peripheral libraries" ========================*/
 
 /*==== |Begin| --> Секция - "Extern libraries" ===============================*/
-#include "Lib_A_UKFMO_macros_definitions.h"
+#if defined (__UKFMO_EXTERN_MODE_ENABLE__)
+	#include "macros_definitions.h"
+#endif
 /*==== |End  | <-- Секция - "Extern libraries" ===============================*/
 /*#### |End  | <-- Секция - "Include" ########################################*/
 
@@ -82,56 +84,13 @@
 	#define __UKFMO_ALWAYS_INLINE
 #endif
 
+/*==== |Begin| --> Секция - Локальная оптимизация функций ====================*/
 #if defined (__GNUC__)
-	#ifndef __UKFMO_OPTIMIZE_O0
-		#define __UKFMO_OPTIMIZE_O0         __attribute__((optimize("O0")))
-	#endif
-
-	#ifndef __UKFMO_OPTIMIZE_O1
-		#define __UKFMO_OPTIMIZE_O1         __attribute__((optimize("O1")))
-	#endif
-
-	#ifndef __UKFMO_OPTIMIZE_O2
-		#define __UKFMO_OPTIMIZE_O2         __attribute__((optimize("O2")))
-	#endif
-
-	#ifndef __UKFMO_OPTIMIZE_O3
-		#define __UKFMO_OPTIMIZE_O3         __attribute__((optimize("O3")))
-	#endif
-
-	#ifndef __UKFMO_OPTIMIZE_OFAST
-		#define __UKFMO_OPTIMIZE_OFAST      __attribute__((optimize("Ofast")))
-	#endif
-
-	#ifndef __UKFMO_OPTIMIZE_OS
-		#define __UKFMO_OPTIMIZE_OS         __attribute__((optimize("Os")))
-	#endif
-
-#else
-	#ifndef __UKFMO_OPTIMIZE_O0
-		#define __UKFMO_OPTIMIZE_O0
-	#endif
-
-	#ifndef __UKFMO_OPTIMIZE_O1
-		#define __UKFMO_OPTIMIZE_O1
-	#endif
-
-	#ifndef __UKFMO_OPTIMIZE_O2
-		#define __UKFMO_OPTIMIZE_O2
-	#endif
-
-	#ifndef __UKFMO_OPTIMIZE_O3
-		#define __UKFMO_OPTIMIZE_O3
-	#endif
-
-	#ifndef __UKFMO_OPTIMIZE_OFAST
-		#define __UKFMO_OPTIMIZE_OFAST
-	#endif
-
-	#ifndef __UKFMO_OPTIMIZE_OS
-		#define __UKFMO_OPTIMIZE_OS
-	#endif
+    #ifndef __PREFIX_FNC_OPTIMIZE_MODE
+        #define __PREFIX_FNC_OPTIMIZE_MODE
+    #endif
 #endif
+/*==== |End| --> Секция - Локальная оптимизация функций ======================*/
 
 #if defined (__UKFMO_FNC_SPACE_NAME)
 	#if defined (__GNUC__)
@@ -270,7 +229,7 @@ UKFMO_MatrixZeros(
 #endif
 );
 
-extern ukfmo_fnc_status_e __UKFMO_OPTIMIZE_OFAST
+extern ukfmo_fnc_status_e __PREFIX_FNC_OPTIMIZE_MODE
 UKMO_MatrixAdition(
 #if defined(__UKFMO_USE_ARM_MATH__)
 	#if (__UKFMO_FPT_SIZE__)    == 4
@@ -289,7 +248,7 @@ UKMO_MatrixAdition(
 #endif
 ) __UKFMO_FNC_LOCATION_IN_SPECIAL_SPACE;
 
-extern ukfmo_fnc_status_e __UKFMO_OPTIMIZE_OFAST
+extern ukfmo_fnc_status_e __PREFIX_FNC_OPTIMIZE_MODE
 UKMO_MatrixSubstraction(
 #if defined(__UKFMO_USE_ARM_MATH__)
 	#if (__UKFMO_FPT_SIZE__)    == 4
@@ -308,7 +267,7 @@ UKMO_MatrixSubstraction(
 #endif
 ) __UKFMO_FNC_LOCATION_IN_SPECIAL_SPACE;
 
-extern ukfmo_fnc_status_e __UKFMO_OPTIMIZE_OFAST
+extern ukfmo_fnc_status_e __PREFIX_FNC_OPTIMIZE_MODE
 UKFMO_MatrixMultiplication(
 #if defined(__UKFMO_USE_ARM_MATH__)
 	#if (__UKFMO_FPT_SIZE__)    == 4
@@ -327,7 +286,7 @@ UKFMO_MatrixMultiplication(
 #endif
 ) __UKFMO_FNC_LOCATION_IN_SPECIAL_SPACE;
 
-extern ukfmo_fnc_status_e __UKFMO_OPTIMIZE_OFAST
+extern ukfmo_fnc_status_e __PREFIX_FNC_OPTIMIZE_MODE
 UKFMO_MatrixMultScale(
 #if defined(__UKFMO_USE_ARM_MATH__)
 	#if (__UKFMO_FPT_SIZE__)    == 4
@@ -346,7 +305,7 @@ UKFMO_MatrixMultScale(
 #endif
 ) __UKFMO_FNC_LOCATION_IN_SPECIAL_SPACE;
 
-extern ukfmo_fnc_status_e __UKFMO_OPTIMIZE_OFAST
+extern ukfmo_fnc_status_e __PREFIX_FNC_OPTIMIZE_MODE
 UKFMO_MatrixTranspose(
 #if defined(__UKFMO_USE_ARM_MATH__)
 	#if (__UKFMO_FPT_SIZE__)    == 4
@@ -362,7 +321,7 @@ UKFMO_MatrixTranspose(
 #endif
 ) __UKFMO_FNC_LOCATION_IN_SPECIAL_SPACE;
 
-extern ukfmo_fnc_status_e __UKFMO_OPTIMIZE_OFAST
+extern ukfmo_fnc_status_e __PREFIX_FNC_OPTIMIZE_MODE
 UKFMO_MatrixInverse(
 #if defined(__UKFMO_USE_ARM_MATH__)
 	#if (__UKFMO_FPT_SIZE__)    == 4
@@ -378,7 +337,7 @@ UKFMO_MatrixInverse(
 #endif
 ) __UKFMO_FNC_LOCATION_IN_SPECIAL_SPACE;
 
-extern ukfmo_fnc_status_e __UKFMO_OPTIMIZE_OFAST
+extern ukfmo_fnc_status_e __PREFIX_FNC_OPTIMIZE_MODE
 UKFMO_GetCholeskyLow(
 #if defined(__UKFMO_USE_ARM_MATH__)
 	#if (__UKFMO_FPT_SIZE__)    == 4
