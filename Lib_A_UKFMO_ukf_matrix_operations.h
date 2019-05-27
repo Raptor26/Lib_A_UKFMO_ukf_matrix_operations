@@ -86,21 +86,25 @@
 
 /*==== |Begin| --> Секция - Локальная оптимизация функций ====================*/
 #if defined (__GNUC__)
-    #ifndef __PREFIX_FNC_OPTIMIZE_MODE
-        #define __PREFIX_FNC_OPTIMIZE_MODE
+    #ifndef __UKFMO_FNC_OPTIMIZE_MODE
+        #define __UKFMO_FNC_OPTIMIZE_MODE
     #endif
 #endif
 /*==== |End| --> Секция - Локальная оптимизация функций ======================*/
 
-#if defined (__UKFMO_FNC_SPACE_NAME)
-	#if defined (__GNUC__)
-		#define __UKFMO_FNC_LOCATION_IN_SPECIAL_SPACE  __attribute__ ((section(__UKFMO_FNC_SPACE_NAME)))
-	#else
-		#error "You defined the name of the memory area for the function location, but the type of your compiler is not supported by the library. You can delete the macro definition __UKFMO_FNC_SPACE_NAME or extend the macro definition __UKFMO_LOCATION_IN_SPECIAL_SPACE for your compiler type"
-	#endif
+/*==== |Begin| --> Секция - Расположение функций библиотеки в специальной
+ *                          области памяти ===================================*/
+#if defined (__UKFMO_FNC_MEMORY_LOCATION_NAME__)
+  #if defined (__GNUC__)
+    #define __UKFMO_FNC_MEMORY_LOCATION  __attribute__ ((section(__UKFMO_FNC_MEMORY_LOCATION_NAME__)))
+  #else
+    #error "You defined the name of the memory area for the function location, but the type of your compiler is not supported by the library. You can delete the macro definition __UKFMO_FNC_MEMORY_LOCATION_NAME__ or extend the macro definition __UKFMO_FNC_MEMORY_LOCATION for your compiler type"
+  #endif
 #else
-	#define __UKFMO_FNC_LOCATION_IN_SPECIAL_SPACE
+  #define __UKFMO_FNC_MEMORY_LOCATION
 #endif
+/*==== |End  | <-- Секция - Расположение функций библиотеки в специальной
+ *                          области памяти ===================================*/
 /*#### |End  | <-- Секция - "Определение констант" ###########################*/
 
 
@@ -229,7 +233,7 @@ UKFMO_MatrixZeros(
 #endif
 );
 
-extern ukfmo_fnc_status_e __PREFIX_FNC_OPTIMIZE_MODE
+extern ukfmo_fnc_status_e __UKFMO_FNC_OPTIMIZE_MODE
 UKMO_MatrixAdition(
 #if defined(__UKFMO_USE_ARM_MATH__)
 	#if (__UKFMO_FPT_SIZE__)    == 4
@@ -246,9 +250,9 @@ UKMO_MatrixAdition(
 	ukfmo_matrix_s *pSrcB_s,
 	ukfmo_matrix_s *pDst_s
 #endif
-) __UKFMO_FNC_LOCATION_IN_SPECIAL_SPACE;
+) __UKFMO_FNC_MEMORY_LOCATION;
 
-extern ukfmo_fnc_status_e __PREFIX_FNC_OPTIMIZE_MODE
+extern ukfmo_fnc_status_e __UKFMO_FNC_OPTIMIZE_MODE
 UKMO_MatrixSubstraction(
 #if defined(__UKFMO_USE_ARM_MATH__)
 	#if (__UKFMO_FPT_SIZE__)    == 4
@@ -265,9 +269,9 @@ UKMO_MatrixSubstraction(
 	ukfmo_matrix_s *pSrcB_s,
 	ukfmo_matrix_s *pDst_s
 #endif
-) __UKFMO_FNC_LOCATION_IN_SPECIAL_SPACE;
+) __UKFMO_FNC_MEMORY_LOCATION;
 
-extern ukfmo_fnc_status_e __PREFIX_FNC_OPTIMIZE_MODE
+extern ukfmo_fnc_status_e __UKFMO_FNC_OPTIMIZE_MODE
 UKFMO_MatrixMultiplication(
 #if defined(__UKFMO_USE_ARM_MATH__)
 	#if (__UKFMO_FPT_SIZE__)    == 4
@@ -284,9 +288,9 @@ UKFMO_MatrixMultiplication(
 	ukfmo_matrix_s *pSrcB_s,
 	ukfmo_matrix_s *pDst_s
 #endif
-) __UKFMO_FNC_LOCATION_IN_SPECIAL_SPACE;
+) __UKFMO_FNC_MEMORY_LOCATION;
 
-extern ukfmo_fnc_status_e __PREFIX_FNC_OPTIMIZE_MODE
+extern ukfmo_fnc_status_e __UKFMO_FNC_OPTIMIZE_MODE
 UKFMO_MatrixMultScale(
 #if defined(__UKFMO_USE_ARM_MATH__)
 	#if (__UKFMO_FPT_SIZE__)    == 4
@@ -303,9 +307,9 @@ UKFMO_MatrixMultScale(
 	__UKFMO_FPT__   scale,
 	ukfmo_matrix_s *pDst_s
 #endif
-) __UKFMO_FNC_LOCATION_IN_SPECIAL_SPACE;
+) __UKFMO_FNC_MEMORY_LOCATION;
 
-extern ukfmo_fnc_status_e __PREFIX_FNC_OPTIMIZE_MODE
+extern ukfmo_fnc_status_e __UKFMO_FNC_OPTIMIZE_MODE
 UKFMO_MatrixTranspose(
 #if defined(__UKFMO_USE_ARM_MATH__)
 	#if (__UKFMO_FPT_SIZE__)    == 4
@@ -319,9 +323,9 @@ UKFMO_MatrixTranspose(
 	ukfmo_matrix_s *pSrc_s,
 	ukfmo_matrix_s *pDst_s
 #endif
-) __UKFMO_FNC_LOCATION_IN_SPECIAL_SPACE;
+) __UKFMO_FNC_MEMORY_LOCATION;
 
-extern ukfmo_fnc_status_e __PREFIX_FNC_OPTIMIZE_MODE
+extern ukfmo_fnc_status_e __UKFMO_FNC_OPTIMIZE_MODE
 UKFMO_MatrixInverse(
 #if defined(__UKFMO_USE_ARM_MATH__)
 	#if (__UKFMO_FPT_SIZE__)    == 4
@@ -335,9 +339,9 @@ UKFMO_MatrixInverse(
 	ukfmo_matrix_s *pSrc_s,
 	ukfmo_matrix_s *pDst_s
 #endif
-) __UKFMO_FNC_LOCATION_IN_SPECIAL_SPACE;
+) __UKFMO_FNC_MEMORY_LOCATION;
 
-extern ukfmo_fnc_status_e __PREFIX_FNC_OPTIMIZE_MODE
+extern ukfmo_fnc_status_e __UKFMO_FNC_OPTIMIZE_MODE
 UKFMO_GetCholeskyLow(
 #if defined(__UKFMO_USE_ARM_MATH__)
 	#if (__UKFMO_FPT_SIZE__)    == 4
@@ -348,7 +352,7 @@ UKFMO_GetCholeskyLow(
 #else
 	ukfmo_matrix_s *pSrc_s
 #endif
-) __UKFMO_FNC_LOCATION_IN_SPECIAL_SPACE;
+) __UKFMO_FNC_MEMORY_LOCATION;
 /*#### |End  | <-- Секция - "Прототипы глобальных функций" ###################*/
 
 
