@@ -76,6 +76,10 @@ UKFMO_MatrixInit(
 	p_s->numCols 		= columnNumb;
 	p_s->pData 			= pMatrix;
 	#endif
+
+	/* Проверка параметров структуры матрицы */
+	__UKFMO_CheckMatrixStructValidation(p_s);
+
 	return (UKFMO_OK);
 }
 
@@ -95,6 +99,9 @@ UKFMO_CopyParams(
 #endif
 )
 {
+	/* Проверка исходной структуры */
+	__UKFMO_CheckMatrixStructValidation(pSrc_s);
+
 #if defined(__UKFMO_USE_ARM_MATH__)
 	pDst_s->numCols 	= pSrc_s->numCols;
 	pDst_s->numRows 	= pSrc_s->numRows;
@@ -104,6 +111,10 @@ UKFMO_CopyParams(
 	pDst_s->numRows 	= pSrc_s->numRows;
 	pDst_s->pData 		= pSrc_s->pData;
 #endif
+
+	/* Проверка параметров матрицы после копирования данных */
+	__UKFMO_CheckMatrixStructValidation(pDst_s);
+
 	return (UKFMO_OK);
 }
 
@@ -120,6 +131,9 @@ UKFMO_MatrixOnes(
 #endif
 )
 {
+	/* Проверка параметров матрицы */
+	__UKFMO_CheckMatrixStructValidation(pSrc_s);
+
 	#if defined(__UKFMO_USE_ARM_MATH__)
 	size_t i;
 	for (i = 0; i < pSrc_s->numCols * pSrc_s->numRows; i++)
@@ -150,6 +164,8 @@ UKFMO_MatrixIdentity(
 #endif
 )
 {
+	__UKFMO_CheckMatrixStructValidation(pSrc_s);
+
 	#if defined(__UKFMO_USE_ARM_MATH__)
 	__UKFMO_FPT__ * const pDst = (__UKFMO_FPT__ *)pSrc_s->pData;
 	const size_t nCol = pSrc_s->numCols;
@@ -225,6 +241,8 @@ UKFMO_MatrixZeros(
 #endif
 )
 {
+	__UKFMO_CheckMatrixStructValidation(pSrc_s);
+
 	#if defined(__UKFMO_USE_ARM_MATH__)
 	memset(
 		(void*) pSrc_s->pData,
@@ -273,6 +291,9 @@ UKMO_MatrixAdition(
 #endif
 )
 {
+	__UKFMO_CheckMatrixStructValidation(pSrcA_s);
+	__UKFMO_CheckMatrixStructValidation(pSrcB_s);
+	__UKFMO_CheckMatrixStructValidation(pDst_s);
 	#if defined(__UKFMO_USE_ARM_MATH__)
 	arm_status status_e;
 	#if (__UKFMO_FPT_SIZE__) == 4
@@ -336,6 +357,10 @@ UKMO_MatrixSubstraction(
 #endif
 )
 {
+	__UKFMO_CheckMatrixStructValidation(pSrcA_s);
+	__UKFMO_CheckMatrixStructValidation(pSrcB_s);
+	__UKFMO_CheckMatrixStructValidation(pDst_s);
+
 	#if defined(__UKFMO_USE_ARM_MATH__)
 	arm_status status_e;
 	#if (__UKFMO_FPT_SIZE__) == 4
@@ -399,6 +424,10 @@ UKFMO_MatrixMultiplication(
 #endif
 )
 {
+	__UKFMO_CheckMatrixStructValidation(pSrcA_s);
+	__UKFMO_CheckMatrixStructValidation(pSrcB_s);
+	__UKFMO_CheckMatrixStructValidation(pDst_s);
+
 	#if defined(__UKFMO_USE_ARM_MATH__)
 	arm_status status_e;
 	#if (__UKFMO_FPT_SIZE__) == 4
@@ -471,6 +500,9 @@ UKFMO_MatrixMultScale(
 #endif
 )
 {
+	__UKFMO_CheckMatrixStructValidation(pSrc_s);
+	__UKFMO_CheckMatrixStructValidation(pDst_s);
+
 	#if defined(__UKFMO_USE_ARM_MATH__)
 	arm_status status_e;
 	#if (__UKFMO_FPT_SIZE__) == 4
@@ -523,6 +555,9 @@ UKFMO_MatrixTranspose(
 #endif
 )
 {
+	__UKFMO_CheckMatrixStructValidation(pSrc_s);
+	__UKFMO_CheckMatrixStructValidation(pDst_s);
+
 	#if defined(__UKFMO_USE_ARM_MATH__)
 	arm_status status_e;
 	#if( __UKFMO_FPT_SIZE__) == 4
@@ -577,6 +612,9 @@ UKFMO_MatrixInverse(
 #endif
 )
 {
+	__UKFMO_CheckMatrixStructValidation(pSrc_s);
+	__UKFMO_CheckMatrixStructValidation(pDst_s);
+
 	#if defined(__UKFMO_USE_ARM_MATH__)
 	arm_status status_e;
 	#if (__UKFMO_FPT_SIZE__) == 4
@@ -680,6 +718,8 @@ UKFMO_GetCholeskyLow(
 #endif
 )
 {
+	__UKFMO_CheckMatrixStructValidation(pSrc_s);
+
 	ukfmo_fnc_status_e status_e = UKFMO_OK;
 	__UKFMO_FPT__ * const pSrcL = pSrc_s->pData;
 	size_t col, row;

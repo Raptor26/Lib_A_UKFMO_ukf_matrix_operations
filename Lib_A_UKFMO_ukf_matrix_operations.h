@@ -86,22 +86,22 @@
 
 /*==== |Begin| --> Секция - Локальная оптимизация функций ====================*/
 #if defined (__GNUC__)
-    #ifndef __UKFMO_FNC_OPTIMIZE_MODE
-        #define __UKFMO_FNC_OPTIMIZE_MODE
-    #endif
+	#ifndef __UKFMO_FNC_OPTIMIZE_MODE
+		#define __UKFMO_FNC_OPTIMIZE_MODE
+	#endif
 #endif
 /*==== |End| --> Секция - Локальная оптимизация функций ======================*/
 
 /*==== |Begin| --> Секция - Расположение функций библиотеки в специальной
  *                          области памяти ===================================*/
 #if defined (__UKFMO_FNC_MEMORY_LOCATION_NAME__)
-  #if defined (__GNUC__)
-    #define __UKFMO_FNC_MEMORY_LOCATION  __attribute__ ((section(__UKFMO_FNC_MEMORY_LOCATION_NAME__)))
-  #else
-    #error "You defined the name of the memory area for the function location, but the type of your compiler is not supported by the library. You can delete the macro definition __UKFMO_FNC_MEMORY_LOCATION_NAME__ or extend the macro definition __UKFMO_FNC_MEMORY_LOCATION for your compiler type"
-  #endif
+	#if defined (__GNUC__)
+		#define __UKFMO_FNC_MEMORY_LOCATION  __attribute__ ((section(__UKFMO_FNC_MEMORY_LOCATION_NAME__)))
+	#else
+		#error "You defined the name of the memory area for the function location, but the type of your compiler is not supported by the library. You can delete the macro definition __UKFMO_FNC_MEMORY_LOCATION_NAME__ or extend the macro definition __UKFMO_FNC_MEMORY_LOCATION for your compiler type"
+	#endif
 #else
-  #define __UKFMO_FNC_MEMORY_LOCATION
+	#define __UKFMO_FNC_MEMORY_LOCATION
 #endif
 /*==== |End  | <-- Секция - Расположение функций библиотеки в специальной
  *                          области памяти ===================================*/
@@ -357,6 +357,78 @@ UKFMO_GetCholeskyLow(
 
 
 /*#### |Begin| --> Секция - "Определение макросов" ###########################*/
+
+/*-------------------------------------------------------------------------*//**
+ * @author    Mickle Isaev
+ * @date      22-авг-2019
+ *
+ * @brief Если макрос __UKFMO_ALL_INTERRUPT_DIS() объявлен, то
+ *        используется его внешнее определение, иначе используется заглушка
+ *        @note Макрос должен отключать прерывния в системе, чтобы ОС не могла
+ *        		переключать задачи
+ *
+ * @return 	None
+ */
+#if defined (__UKFMO_ALL_INTERRUPTS_DIS)
+#else
+	#define __UKFMO_ALL_INTERRUPTS_DIS()
+#endif
+
+#if defined (__UKFMO_CHEKING_ENABLE__)
+/*-------------------------------------------------------------------------*//**
+ * @author    Mickle Isaev
+ * @date      22-авг-2019
+ *
+ * @brief    Макрос для проверки валидности структуры матрицы
+ *
+ * @param[in] x: Указатель на структуру матрицы
+ * @param[in] rowMaw: Максимальное количество строк матрицы
+ * @param[in] colMax: Максимальное количество столбцов матрицы
+ *
+ * @return 	Возвращает 1u если параметры структуры валидны, иначе 0u
+ */
+#define __UKFMO_IsMatrixStructValid(x, rowMaw, colMax) \
+	(((((x)->numRows != 0u) && ((x)->numRows <= (rowMaw))) && \
+	(  ((x)->numCols != 0u) && ((x)->numCols <= (rowMaw))) && \
+	(   (x)->pData != NULL)) == 1u)
+#else
+#define __UKFMO_IsMatrixStructValid(x, rowMax, colMax) (1u)
+#endif
+
+#if defined (__UKFMO_CHEKING_ENABLE__)
+/*-------------------------------------------------------------------------*//**
+ * @author    Mickle Isaev
+ * @date      22-авг-2019
+ *
+ * @brief    Макрос зацикливает программу в случае неверных параметров
+ *           структуры матрицы
+ *
+ * @param[in] x: Указатель на структуру матрицы
+ * @param[in] rowMaw: Максимальное количество строк матрицы
+ * @param[in] colMax: Максимальное количество столбцов матрицы
+ *
+ * @return None
+ */
+#define __UKFMO_CheckMatrixStructValidationGeneric(x, rowMaw, colMax) \
+	while(__UKFMO_IsMatrixStructValid((x), (rowMaw), (colMax)) != 1u){ __UKFMO_ALL_INTERRUPTS_DIS(); }
+
+/*-------------------------------------------------------------------------*//**
+ * @author    Mickle Isaev
+ * @date      22-авг-2019
+ *
+ * @brief    Макрос зацикливает программу в случае неверных параметров
+ *           структуры матрицы
+ *
+ * @param[in] 	x: 	Указатель на структуру матрицы
+ *
+ * @return None
+ */
+#define __UKFMO_CheckMatrixStructValidation(x) \
+	while(__UKFMO_IsMatrixStructValid((x), (UINT16_MAX), (UINT16_MAX)) != 1u){ __UKFMO_ALL_INTERRUPTS_DIS(); }
+#else
+#define __UKFMO_CheckMatrixStructValidationGeneric(x, rowMaw, colMax)
+#define __UKFMO_CheckMatrixStructValidation(x)
+#endif
 /*#### |End  | <-- Секция - "Определение макросов" ###########################*/
 
 #endif  /* LIB_A_UKFMO_UKF_MATRIX_OPERATIONS_H_ */
