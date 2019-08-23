@@ -615,6 +615,9 @@ UKFMO_MatrixInverse(
 	__UKFMO_CheckMatrixStructValidation(pSrc_s);
 	__UKFMO_CheckMatrixStructValidation(pDst_s);
 
+	/* Зависнуть, если адреса матриц совпадают */
+	__UKFMO_CheckMatAddrDiff(pSrc_s, pDst_s);
+
 	#if defined(__UKFMO_USE_ARM_MATH__)
 	arm_status status_e;
 	#if (__UKFMO_FPT_SIZE__) == 4

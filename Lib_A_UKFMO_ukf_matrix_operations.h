@@ -410,7 +410,7 @@ UKFMO_GetCholeskyLow(
  * @return None
  */
 #define __UKFMO_CheckMatrixStructValidationGeneric(x, rowMaw, colMax) \
-	while(__UKFMO_IsMatrixStructValid((x), (rowMaw), (colMax)) != 1u){ __UKFMO_ALL_INTERRUPTS_DIS(); }
+	while(__UKFMO_IsMatrixStructValid((x), (rowMaw), (colMax)) != 1u){ __UKFMO_ALL_INTERRUPTS_DIS(); while(1);}
 
 /*-------------------------------------------------------------------------*//**
  * @author    Mickle Isaev
@@ -424,10 +424,19 @@ UKFMO_GetCholeskyLow(
  * @return None
  */
 #define __UKFMO_CheckMatrixStructValidation(x) \
-	while(__UKFMO_IsMatrixStructValid((x), (UINT16_MAX), (UINT16_MAX)) != 1u){ __UKFMO_ALL_INTERRUPTS_DIS(); }
+	while(__UKFMO_IsMatrixStructValid((x), (UINT16_MAX), (UINT16_MAX)) != 1u) { __UKFMO_ALL_INTERRUPTS_DIS(); while(1);}
+
+#define __UKFMO_IsMatAddrDiff(mat1, mat2)	\
+	((mat1->pData != mat2->pData) == 1u)
+
+#define __UKFMO_CheckMatAddrDiff(mat1, mat2) \
+	while((__UKFMO_IsMatAddrDiff((mat1), (mat2)) != 1u)) {__UKFMO_ALL_INTERRUPTS_DIS(); while(1);}
+
 #else
 #define __UKFMO_CheckMatrixStructValidationGeneric(x, rowMaw, colMax)
 #define __UKFMO_CheckMatrixStructValidation(x)
+#define __UKFMO_IsMatAddrDiff(mat1, mat2)
+#define __UKFMO_CheckMatAddrDiff(mat1, mat2);
 #endif
 /*#### |End  | <-- Секция - "Определение макросов" ###########################*/
 
