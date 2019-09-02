@@ -194,6 +194,22 @@ UKFMO_CopyParams(
 #endif
 );
 
+extern ukfmo_fnc_status_e __UKFMO_FNC_OPTIMIZE_MODE
+UKFMO_CopyMatrix(
+#if defined(__UKFMO_USE_ARM_MATH__)
+	#if (__UKFMO_FPT_SIZE__) 	== 4
+		arm_matrix_instance_f32 *pDst_s,
+		arm_matrix_instance_f32 *pSrc_s
+	#elif (__UKFMO_FPT_SIZE__) 	== 8
+		arm_matrix_instance_f64 *pDst_s,
+		arm_matrix_instance_f64 *pSrc_s
+	#endif
+#else
+	ukfmo_matrix_s *pDst_s,
+	ukfmo_matrix_s *pSrc_s
+#endif
+) __UKFMO_FNC_MEMORY_LOCATION;
+
 extern ukfmo_fnc_status_e
 UKFMO_MatrixOnes(
 #if defined(__UKFMO_USE_ARM_MATH__)
@@ -410,7 +426,7 @@ UKFMO_GetCholeskyLow(
  * @return None
  */
 #define __UKFMO_CheckMatrixStructValidationGeneric(x, rowMaw, colMax) \
-	while(__UKFMO_IsMatrixStructValid((x), (rowMaw), (colMax)) != 1u){ __UKFMO_ALL_INTERRUPTS_DIS(); while(1);}
+	while(__UKFMO_IsMatrixStructValid((x), (rowMaw), (colMax)) != 1u){ __UKFMO_ALL_INTERRUPTS_DIS();}
 
 /*-------------------------------------------------------------------------*//**
  * @author    Mickle Isaev
@@ -423,8 +439,10 @@ UKFMO_GetCholeskyLow(
  *
  * @return None
  */
+#if !defined (__UKFMO_CheckMatrixStructValidation)
 #define __UKFMO_CheckMatrixStructValidation(x) \
 	while(__UKFMO_IsMatrixStructValid((x), (UINT16_MAX), (UINT16_MAX)) != 1u) { __UKFMO_ALL_INTERRUPTS_DIS(); while(1);}
+#endif
 
 #define __UKFMO_IsMatAddrDiff(mat1, mat2)	\
 	((mat1->pData != mat2->pData) == 1u)

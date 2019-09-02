@@ -102,18 +102,62 @@ UKFMO_CopyParams(
 	/* Проверка исходной структуры */
 	__UKFMO_CheckMatrixStructValidation(pSrc_s);
 
-#if defined(__UKFMO_USE_ARM_MATH__)
+	#if defined(__UKFMO_USE_ARM_MATH__)
 	pDst_s->numCols 	= pSrc_s->numCols;
 	pDst_s->numRows 	= pSrc_s->numRows;
 	pDst_s->pData 		= pSrc_s->pData;
-#else
+	#else
 	pDst_s->numCols 	= pSrc_s->numCols;
 	pDst_s->numRows 	= pSrc_s->numRows;
 	pDst_s->pData 		= pSrc_s->pData;
-#endif
+	#endif
 
 	/* Проверка параметров матрицы после копирования данных */
 	__UKFMO_CheckMatrixStructValidation(pDst_s);
+
+	return (UKFMO_OK);
+}
+
+__UKFMO_FORCE_INLINE ukfmo_fnc_status_e __UKFMO_FNC_OPTIMIZE_MODE
+UKFMO_CopyMatrix(
+#if defined(__UKFMO_USE_ARM_MATH__)
+	#if (__UKFMO_FPT_SIZE__) 	== 4
+		arm_matrix_instance_f32 *pDst_s,
+		arm_matrix_instance_f32 *pSrc_s
+	#elif (__UKFMO_FPT_SIZE__) 	== 8
+		arm_matrix_instance_f64 *pDst_s,
+		arm_matrix_instance_f64 *pSrc_s
+	#endif
+#else
+	ukfmo_matrix_s *pDst_s,
+	ukfmo_matrix_s *pSrc_s
+#endif
+)
+{
+	/* Проверка структур матриц на валидность */
+	__UKFMO_CheckMatrixStructValidation(pDst_s);
+	__UKFMO_CheckMatrixStructValidation(pSrc_s);
+
+	#if defined (__UKFMO_CHEKING_ENABLE__)
+	/* Если размерности не матриц совпадают */
+	if (((pDst_s->numCols 	== pSrc_s->numCols) &&
+		 (pDst_s->numRows 	== pSrc_s->numRows) &&
+		 (pDst_s->pData 	!= pSrc_s->pData)) != 1u)
+	{
+		__UKFMO_ALL_INTERRUPTS_DIS();
+		while (1);
+	}
+	#endif
+
+	/* Копирование матрицы из одной области памяти в другую */
+	size_t i;
+	for (
+		i = 0u;
+		i < (pDst_s->numRows * pDst_s->numCols * sizeof(__UKFMO_FPT__));
+		i++)
+	{
+		pDst_s->pData[i] = pSrc_s->pData[i];
+	}
 
 	return (UKFMO_OK);
 }
