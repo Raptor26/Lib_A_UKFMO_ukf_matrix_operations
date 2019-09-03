@@ -440,19 +440,24 @@ UKFMO_GetCholeskyLow(
  * @return None
  */
 #if !defined (__UKFMO_CheckMatrixStructValidation)
-#define __UKFMO_CheckMatrixStructValidation(x) \
-	while(__UKFMO_IsMatrixStructValid((x), (UINT16_MAX), (UINT16_MAX)) != 1u) { __UKFMO_ALL_INTERRUPTS_DIS(); while(1);}
+	#define __UKFMO_CheckMatrixStructValidation(x) __UKFMO_CheckMatrixStructValidationGeneric((x), (UINT16_MAX), (UINT16_MAX))
 #endif
 
 #define __UKFMO_IsMatAddrDiff(mat1, mat2)	\
 	((mat1->pData != mat2->pData) == 1u)
 
 #define __UKFMO_CheckMatAddrDiff(mat1, mat2) \
-	while((__UKFMO_IsMatAddrDiff((mat1), (mat2)) != 1u)) {__UKFMO_ALL_INTERRUPTS_DIS(); while(1);}
+	while((__UKFMO_IsMatAddrDiff((mat1), (mat2)) != 1u)) {__UKFMO_ALL_INTERRUPTS_DIS(); }
 
 #else
 #define __UKFMO_CheckMatrixStructValidationGeneric(x, rowMaw, colMax)
-#define __UKFMO_CheckMatrixStructValidation(x)
+
+#if defined (__UKFMO_CheckMatrixStructValidation)
+	#error "Delete define __UKFMO_CheckMatrixStructValidation() in macros_definition.h"
+#else
+	#define __UKFMO_CheckMatrixStructValidation(x) __UKFMO_CheckMatrixStructValidationGeneric((x), (UINT16_MAX), (UINT16_MAX))
+#endif
+
 #define __UKFMO_IsMatAddrDiff(mat1, mat2)
 #define __UKFMO_CheckMatAddrDiff(mat1, mat2);
 #endif
