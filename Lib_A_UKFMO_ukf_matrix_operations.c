@@ -153,7 +153,7 @@ UKFMO_CopyMatrix(
 	size_t i;
 	for (
 		i = 0u;
-		i < (pDst_s->numRows * pDst_s->numCols * sizeof(__UKFMO_FPT__));
+		i < (pDst_s->numRows * pDst_s->numCols);
 		i++)
 	{
 		pDst_s->pData[i] = pSrc_s->pData[i];
