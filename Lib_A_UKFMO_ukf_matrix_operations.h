@@ -492,7 +492,7 @@ UKFMO_GetCholeskyLow(
  *
  * @brief    Маакрос возвращает количество ячеек матрицы
  *
- * @param[in] 	*pMatrix_s: Указатель на матрицу
+ * @param[in] 	*pMatrix_s: Указатель на структуру матрицы
  *
  * @return Общее количество ячеек матрицы
  */
@@ -505,15 +505,35 @@ UKFMO_GetCholeskyLow(
  * @brief    Макрос приводит заданную позицию ячейки из двумерного массива
  *           к одномерному
  *
- * @param[in] 	*pMatrix_s: Указатель на матрицу
+ * @param[in] 	*pMatrix_s: Указатель на структуру матрицы
  * @param[in]   rowPos: 	Заданная строка матрицы
  * @param[in]   colPos:    	Заданный столбец матрицы
  *
  * @return  Номер ячейки для одномерного массива, которая будет соответствовать
  *          заданной позиции
  */
-#define __UKF_GetIndexInOneFromTwoDim(pMatrix_s, rowPos, colPos) \
+#define __UKFMO_GetIndexInOneFromTwoDim(pMatrix_s, rowPos, colPos) \
 	(__UKFMO_GetColNumb(pMatrix_s) * rowPos + colPos)
+
+#if defined (__UKFMO_CHEKING_ENABLE__)
+/*-------------------------------------------------------------------------*//**
+ * @author    Mickle Isaev
+ * @date      04-сен-2019
+ *
+ * @brief    Макрос проверяет размер матрицы с размером массива, в котором
+ *           эта матрица хранится.
+ *           Если размеры не совпадают, то программа зацикливается
+ *
+ * @param[in] 	*pMatrix_s: Указатель на структуру матрицы
+ * @param[in] 	sizeofArr: 	Результат оператора sizeof (размер массива в байтах)
+ *
+ * @return   None
+ */
+#define __UKFMO_CheckMatrixSize(pMatrix_s, sizeofArr) \
+	while ((__UKFMO_GetCellNumb((pMatrix_s)) * sizeof(__UKFMO_FPT__)) != (sizeofArr)) {__UKFMO_ALL_INTERRUPTS_DIS();}
+#else
+#define __UKFMO_CheckMatrixSize(pMatrix_s, sizeofArr)
+#endif
 /*#### |End  | <-- Секция - "Определение макросов" ###########################*/
 
 #endif  /* LIB_A_UKFMO_UKF_MATRIX_OPERATIONS_H_ */
