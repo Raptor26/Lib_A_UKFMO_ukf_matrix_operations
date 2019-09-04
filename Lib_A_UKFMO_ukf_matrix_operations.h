@@ -461,6 +461,59 @@ UKFMO_GetCholeskyLow(
 #define __UKFMO_IsMatAddrDiff(mat1, mat2)
 #define __UKFMO_CheckMatAddrDiff(mat1, mat2);
 #endif
+
+/*-------------------------------------------------------------------------*//**
+ * @author    Mickle Isaev
+ * @date      04-сен-2019
+ *
+ * @brief    Макрос возвращает количество строк матрицы
+ *
+ * @param[in] 	*pMatrix_s: Указатель на матрицу
+ *
+ * @return Количество строк матрицы
+ */
+#define __UKFMO_GetRowNumb(pMatrix_s) 		((pMatrix_s)->numRows)
+
+/*-------------------------------------------------------------------------*//**
+* @author    Mickle Isaev
+* @date      04-сен-2019
+*
+* @brief    Макрос возвращает количество столбцов матрицы
+*
+* @param[in] 	*pMatrix_s: Указатель на матрицу
+*
+* @return Количество столбцов матрицы
+*/
+#define __UKFMO_GetColNumb(pMatrix_s) 		((pMatrix_s)->numCols)
+
+/*-------------------------------------------------------------------------*//**
+ * @author    Mickle Isaev
+ * @date      04-сен-2019
+ *
+ * @brief    Маакрос возвращает количество ячеек матрицы
+ *
+ * @param[in] 	*pMatrix_s: Указатель на матрицу
+ *
+ * @return Общее количество ячеек матрицы
+ */
+#define __UKFMO_GetCellNumb(pMatrix_s) 		(__UKFMO_GetRowNumb(pMatrix_s) * __UKFMO_GetColNumb(pMatrix_s))
+
+/*-------------------------------------------------------------------------*//**
+ * @author    Mickle Isaev
+ * @date      04-сен-2019
+ *
+ * @brief    Макрос приводит заданную позицию ячейки из двумерного массива
+ *           к одномерному
+ *
+ * @param[in] 	*pMatrix_s: Указатель на матрицу
+ * @param[in]   rowPos: 	Заданная строка матрицы
+ * @param[in]   colPos:    	Заданный столбец матрицы
+ *
+ * @return  Номер ячейки для одномерного массива, которая будет соответствовать
+ *          заданной позиции
+ */
+#define __UKF_GetIndexInOneFromTwoDim(pMatrix_s, rowPos, colPos) \
+	(__UKFMO_GetColNumb(pMatrix_s) * rowPos + colPos)
 /*#### |End  | <-- Секция - "Определение макросов" ###########################*/
 
 #endif  /* LIB_A_UKFMO_UKF_MATRIX_OPERATIONS_H_ */
