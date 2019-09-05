@@ -513,7 +513,7 @@ UKFMO_GetCholeskyLow(
  *          заданной позиции
  */
 #define __UKFMO_GetIndexInOneFromTwoDim(pMatrix_s, rowPos, colPos) \
-	(__UKFMO_GetColNumb(pMatrix_s) * rowPos + colPos)
+	(__UKFMO_GetColNumb(pMatrix_s) * (rowPos) + (colPos))
 
 #if defined (__UKFMO_CHEKING_ENABLE__)
 /*-------------------------------------------------------------------------*//**
