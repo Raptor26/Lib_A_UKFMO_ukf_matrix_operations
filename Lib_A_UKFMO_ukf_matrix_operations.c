@@ -417,17 +417,25 @@ UKMO_MatrixSubstraction(
 	__UKFMO_FPT__ * const pDstL         = (__UKFMO_FPT__ *)pDst_s->pData;
 	__UKFMO_FPT__ const * const pSrcA_  = (__UKFMO_FPT__ *)pSrcA_s->pData;
 	__UKFMO_FPT__ const * const pSrcB_  = (__UKFMO_FPT__ *)pSrcB_s->pData;
-	if ((pSrcA_s->numCols == pSrcB_s->numCols) && (pSrcA_s->numRows == pSrcB_s->numRows))
+
+	#if defined (__UKFMO_CHEKING_ENABLE__)
+	if (
+		((pSrcA_s->numCols == pSrcB_s->numCols) &&
+		 (pSrcA_s->numRows == pSrcB_s->numRows) &&
+		 (pSrcA_s->numRows == pDst_s->numRows)	&&
+		 (pSrcA_s->numCols == pDst_s->numCols) 	&&
+		 (pSrcB_s->numRows == pDst_s->numRows) 	&&
+		 (pSrcB_s->numCols == pDst_s->numCols)) != 1u)
 	{
-		size_t eIdx;
-		for (eIdx = 0; eIdx < pSrcA_s->numCols * pSrcA_s->numRows; eIdx++)
-		{
-			pDstL[eIdx] = pSrcA_[eIdx] - pSrcB_[eIdx];
-		}
-	}
-	else
-	{
+		while (1);
 		status_e = UKFMO_SIZE_MISMATCH;
+	}
+	#endif
+
+	size_t eIdx;
+	for (eIdx = 0; eIdx < pSrcA_s->numCols * pSrcA_s->numRows; eIdx++)
+	{
+		pDstL[eIdx] = pSrcA_[eIdx] - pSrcB_[eIdx];
 	}
 	#endif
 
