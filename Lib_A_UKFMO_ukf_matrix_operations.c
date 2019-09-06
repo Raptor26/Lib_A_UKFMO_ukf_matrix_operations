@@ -138,14 +138,13 @@ UKFMO_CopyMatrix(
 	__UKFMO_CheckMatrixStructValidation(pDst_s);
 	__UKFMO_CheckMatrixStructValidation(pSrc_s);
 
+	/* Прроверка размерности матриц */
 	#if defined (__UKFMO_CHEKING_ENABLE__)
-	/* Если размерности не матриц совпадают */
 	if (((pDst_s->numCols 	== pSrc_s->numCols) &&
 		 (pDst_s->numRows 	== pSrc_s->numRows) &&
 		 (pDst_s->pData 	!= pSrc_s->pData)) != 1u)
 	{
-		__UKFMO_ALL_INTERRUPTS_DIS();
-		while (1);
+		return (UKFMO_SIZE_MISMATCH);
 	}
 	#endif
 
@@ -350,18 +349,21 @@ UKMO_MatrixAdition(
 	__UKFMO_FPT__ * const pDstL         = (__UKFMO_FPT__ *)pDst_s->pData;
 	__UKFMO_FPT__ const * const pSrcA_  = (__UKFMO_FPT__ *)pSrcA_s->pData;
 	__UKFMO_FPT__ const * const pSrcB_  = (__UKFMO_FPT__ *)pSrcB_s->pData;
-	if ((pSrcA_s->numCols == pSrcB_s->numCols) && (pSrcA_s->numRows == pSrcB_s->numRows))
+
+	/* Проверка размерности матриц */
+	#if defined (__UKFMO_CHEKING_ENABLE__)
+	if (((pSrcA_s->numCols == pSrcB_s->numCols) && (pSrcA_s->numRows == pSrcB_s->numRows)) != 1u)
 	{
-		size_t eIdx;
-		for (eIdx = 0; eIdx < pSrcA_s->numCols * pSrcA_s->numRows; eIdx++)
-		{
-			pDstL[eIdx] = pSrcA_[eIdx] + pSrcB_[eIdx];
-		}
+		return (UKFMO_SIZE_MISMATCH);
 	}
-	else
+	#endif
+
+	size_t eIdx;
+	for (eIdx = 0; eIdx < pSrcA_s->numCols * pSrcA_s->numRows; eIdx++)
 	{
-		status_e = UKFMO_SIZE_MISMATCH;
+		pDstL[eIdx] = pSrcA_[eIdx] + pSrcB_[eIdx];
 	}
+
 	#endif
 
 	return (status_e);
@@ -427,8 +429,7 @@ UKMO_MatrixSubstraction(
 		 (pSrcB_s->numRows == pDst_s->numRows) 	&&
 		 (pSrcB_s->numCols == pDst_s->numCols)) != 1u)
 	{
-		while (1);
-		status_e = UKFMO_SIZE_MISMATCH;
+		return (UKFMO_SIZE_MISMATCH);
 	}
 	#endif
 
@@ -495,25 +496,27 @@ UKFMO_MatrixMultiplication(
 	size_t row, col, k;
 	__UKFMO_FPT__ sum;
 
-	if (pSrcA_s->numCols == pSrcB_s->numRows)
+	/* Проверка размерности матриц */
+	#if defined (__UKFMO_CHEKING_ENABLE__)
+	if (pSrcA_s->numCols != pSrcB_s->numRows)
 	{
-		for (row = 0; row < pSrcA_s->numRows; row++)
+		return (UKFMO_SIZE_MISMATCH);
+	}
+	#endif
+
+	for (row = 0; row < pSrcA_s->numRows; row++)
+	{
+		for (col = 0; col < pSrcB_s->numCols; col++)
 		{
-			for (col = 0; col < pSrcB_s->numCols; col++)
+			sum = 0;
+			for (k = 0; k < pSrcA_s->numCols; k++)
 			{
-				sum = 0;
-				for (k = 0; k < pSrcA_s->numCols; k++)
-				{
-					sum += pSrc1L[pSrcA_s->numCols * row + k] * pSrc2L[pSrcB_s->numCols * k + col];
-				}
-				pDstL[pDst_s->numCols * row + col] = sum;
+				sum += pSrc1L[pSrcA_s->numCols * row + k] * pSrc2L[pSrcB_s->numCols * k + col];
 			}
+			pDstL[pDst_s->numCols * row + col] = sum;
 		}
 	}
-	else
-	{
-		status_e = UKFMO_SIZE_MISMATCH;
-	}
+
 	#endif
 
 	return (status_e);
@@ -629,20 +632,23 @@ UKFMO_MatrixTranspose(
 	size_t row, col;
 
 	ukfmo_fnc_status_e status_e = UKFMO_OK;
-	if (nRowSrcL == nColDstL || nColSrcL == nRowDstL)
+
+	#if defined (__UKFMO_CHEKING_ENABLE__)
+	if ((nRowSrcL == nColDstL || nColSrcL == nRowDstL) != 1u)
 	{
-		for (row = 0; row < nRowDstL; row++)
+		return (UKFMO_SIZE_MISMATCH);
+	}
+	#endif
+
+
+	for (row = 0; row < nRowDstL; row++)
+	{
+		for (col = 0; col < nColDstL; col++)
 		{
-			for (col = 0; col < nColDstL; col++)
-			{
-				pDstL[nColDstL * row + col] = pSrcL[nColSrcL * col + row];
-			}
+			pDstL[nColDstL * row + col] = pSrcL[nColSrcL * col + row];
 		}
 	}
-	else
-	{
-		status_e = UKFMO_SIZE_MISMATCH;
-	}
+
 	#endif /* defined(__UKFMO_USE_ARM_MATH__) */
 	/* --<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 	return (status_e);
@@ -687,58 +693,61 @@ UKFMO_MatrixInverse(
 	__UKFMO_FPT__ s = 0;
 	__UKFMO_FPT__ t = 0;
 
-	if (nrow == ncol)
+	#if defined (__UKFMO_CHEKING_ENABLE__)
+	if (nrow != ncol)
 	{
-		for (j = 0; j < nrow; j++)
+		return (UKFMO_SIZE_MISMATCH);
+	}
+	#endif
+
+	for (j = 0; j < nrow; j++)
+	{
+		for (i = j; i < nrow; i++)
 		{
-			for (i = j; i < nrow; i++)
+			if (0 != pSrc_s->pData[ncol * i + j])
 			{
-				if (0 != pSrc_s->pData[ncol * i + j])
+				for (k = 0; k < nrow; k++)
 				{
-					for (k = 0; k < nrow; k++)
+					s = pSrc_s->pData[ncol * j + k];
+					pSrc_s->pData[ncol * j + k] = pSrc_s->pData[ncol * i + k];
+					pSrc_s->pData[ncol * i + k] = s;
+
+					s = pDst_s->pData[ncol * j + k];
+					pDst_s->pData[ncol * j + k] = pDst_s->pData[ncol * i + k];
+					pDst_s->pData[ncol * i + k] = s;
+				}
+
+				t = 1 / pSrc_s->pData[ncol * j + j];
+
+				for (k = 0; k < nrow; k++)
+				{
+					pSrc_s->pData[ncol * j + k] = t * pSrc_s->pData[ncol * j + k];
+					pDst_s->pData[ncol * j + k] = t * pDst_s->pData[ncol * j + k];
+				}
+
+				for (l = 0; l < nrow; l++)
+				{
+					if (l != j)
 					{
-						s = pSrc_s->pData[ncol * j + k];
-						pSrc_s->pData[ncol * j + k] = pSrc_s->pData[ncol * i + k];
-						pSrc_s->pData[ncol * i + k] = s;
-
-						s = pDst_s->pData[ncol * j + k];
-						pDst_s->pData[ncol * j + k] = pDst_s->pData[ncol * i + k];
-						pDst_s->pData[ncol * i + k] = s;
-					}
-
-					t = 1 / pSrc_s->pData[ncol * j + j];
-
-					for (k = 0; k < nrow; k++)
-					{
-						pSrc_s->pData[ncol * j + k] = t * pSrc_s->pData[ncol * j + k];
-						pDst_s->pData[ncol * j + k] = t * pDst_s->pData[ncol * j + k];
-					}
-
-					for (l = 0; l < nrow; l++)
-					{
-						if (l != j)
+						t = -pSrc_s->pData[ncol * l + j];
+						for (k = 0; k < nrow; k++)
 						{
-							t = -pSrc_s->pData[ncol * l + j];
-							for (k = 0; k < nrow; k++)
-							{
-								pSrc_s->pData[ncol * l + k] += t *  pSrc_s->pData[ncol * j + k];
-								pDst_s->pData[ncol * l + k] += t *  pDst_s->pData[ncol * j + k];
-							}
+							pSrc_s->pData[ncol * l + k] += t *  pSrc_s->pData[ncol * j + k];
+							pDst_s->pData[ncol * l + k] += t *  pDst_s->pData[ncol * j + k];
 						}
 					}
 				}
-				break;
 			}
-			if (0 == pSrc_s->pData[ncol * l + k])
-			{
-				status_e = UKFMO_SINGULAR;
-			}
+			break;
 		}
+		#if defined (__UKFMO_CHEKING_ENABLE__)
+		if (0 == pSrc_s->pData[ncol * l + k])
+		{
+			status_e = UKFMO_SINGULAR;
+		}
+		#endif
 	}
-	else
-	{
-		status_e = UKFMO_SIZE_MISMATCH;
-	}
+
 	#endif
 
 	return (status_e);
@@ -788,35 +797,39 @@ UKFMO_GetCholeskyLow(
 	const size_t ncol = pSrc_s->numCols;
 	#endif
 
+	#if defined (__UKFMO_CHEKING_ENABLE__)
 	if (ncol == nrow)
 	{
-		const size_t mtxSize = nrow;
-
-		for (col = 0; col < mtxSize; col++)
-		{
-			for (row = 0; row < mtxSize; row++)
-			{
-				sum = pSrcL[mtxSize * col + row];
-
-				for (tmp = (int32_t)(col - 1); tmp >= 0; tmp--)
-				{
-					sum -= pSrcL[mtxSize * row + tmp] * pSrcL[mtxSize * col + tmp];
-				}
-
-				pSrcL[ncol * row + col] = (row == col) ? __UKFMO_sqrt(sum) : (row > col) ? (sum / pSrcL[ncol * col + col]) : 0;
-
-
-				if ((row == col) && (sum <= 0))
-				{
-					status_e = UKFMO_NOT_POS_DEFINED;
-				}
-			}
-		}
 	}
 	else
 	{
-		status_e = UKFMO_NOT_SQUARE;
+		return (UKFMO_NOT_SQUARE);
 	}
+	#endif
+
+	const size_t mtxSize = nrow;
+
+	for (col = 0; col < mtxSize; col++)
+	{
+		for (row = 0; row < mtxSize; row++)
+		{
+			sum = pSrcL[mtxSize * col + row];
+
+			for (tmp = (int32_t)(col - 1); tmp >= 0; tmp--)
+			{
+				sum -= pSrcL[mtxSize * row + tmp] * pSrcL[mtxSize * col + tmp];
+			}
+
+			pSrcL[ncol * row + col] = (row == col) ? __UKFMO_sqrt(sum) : (row > col) ? (sum / pSrcL[ncol * col + col]) : 0;
+
+
+			if ((row == col) && (sum <= 0))
+			{
+				status_e = UKFMO_NOT_POS_DEFINED;
+			}
+		}
+	}
+
 
 	return (status_e);
 }

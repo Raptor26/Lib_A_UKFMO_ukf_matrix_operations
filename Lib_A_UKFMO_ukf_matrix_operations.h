@@ -531,8 +531,30 @@ UKFMO_GetCholeskyLow(
  */
 #define __UKFMO_CheckMatrixSize(pMatrix_s, sizeofArr) \
 	while ((__UKFMO_GetCellNumb((pMatrix_s)) * sizeof(__UKFMO_FPT__)) != (sizeofArr)) {__UKFMO_ALL_INTERRUPTS_DIS();}
+
+#define __UKFMO_CheckMatrixOperationStatus(status) \
+	if(status != UKFMO_OK) \
+	{\
+		if(status == UKFMO_SINGULAR) \
+		{} \
+		else if(status == UKFMO_NOT_POS_DEFINED)\
+		{} \
+		else\
+		{ \
+			__UKFMO_ALL_INTERRUPTS_DIS(); while(1);\
+		} \
+	}
+
+#define __UKFMO_CheckMatrixSingularity(status)		\
+	if((status == UKFMO_SINGULAR)) {__UKFMO_ALL_INTERRUPTS_DIS(); while(1);}
+
+#define __UKFMO_CheckMatrixPosDefine(status) \
+	if((status == UKFMO_NOT_POS_DEFINED)) {__UKFMO_ALL_INTERRUPTS_DIS(); while(1);}
 #else
 #define __UKFMO_CheckMatrixSize(pMatrix_s, sizeofArr)
+#define __UKFMO_CheckMatrixOperationStatus(status)
+#define __UKFMO_CheckMatrixSingularity(status)
+#define __UKFMO_CheckMatrixPosDefine(status)
 #endif
 /*#### |End  | <-- Секция - "Определение макросов" ###########################*/
 
