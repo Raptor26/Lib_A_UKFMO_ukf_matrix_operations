@@ -83,6 +83,17 @@ UKFMO_MatrixInit(
 	return (UKFMO_OK);
 }
 
+/*-------------------------------------------------------------------------*//**
+ * @author    Mickle Isaev
+ * @date      09-сен-2019
+ *
+ * @brief    Функция выполняет копирование параметров матрицы
+ *
+ * @param[out]    pDst_s                     Пункт назначения
+ * @param[in]   pSrc_s                     Источники
+ *
+ * @return    { description_of_the_return_value }
+ */
 ukfmo_fnc_status_e
 UKFMO_CopyParams(
 #if defined(__UKFMO_USE_ARM_MATH__)
@@ -118,6 +129,20 @@ UKFMO_CopyParams(
 	return (UKFMO_OK);
 }
 
+/*-------------------------------------------------------------------------*//**
+ * @author    Mickle Isaev
+ * @date      09-сен-2019
+ *
+ * @brief    Функция выполняет копирование матрицы
+ *
+ * @param[out]  *pDst_s: Указатель на матрицу, в которую будет записан
+ * 						 результат копирования
+ * @param[in] 	*pSrc_s: Указатель на исходную матрицу, копирование которой
+ * 						 необходимо выполнить
+ *
+ * @return  Статус операции
+ *                 @see ukfmo_fnc_status_e
+ */
 __UKFMO_FORCE_INLINE ukfmo_fnc_status_e __UKFMO_FNC_OPTIMIZE_MODE
 UKFMO_CopyMatrix(
 #if defined(__UKFMO_USE_ARM_MATH__)
@@ -161,6 +186,18 @@ UKFMO_CopyMatrix(
 	return (UKFMO_OK);
 }
 
+/*-------------------------------------------------------------------------*//**
+ * @author    Mickle Isaev
+ * @date      09-сен-2019
+ *
+ * @brief    Функция заполняет все элементы матрицы единицами
+ *
+ * @param[in, out] 	*pSrc_s: 	Указатель на структуру матрицы, которую
+ * 								необходимо сделать единичной
+ *
+ * @return  Статус операции
+ *                 @see ukfmo_fnc_status_e
+ */
 ukfmo_fnc_status_e
 UKFMO_MatrixOnes(
 #if defined(__UKFMO_USE_ARM_MATH__)
@@ -194,6 +231,19 @@ UKFMO_MatrixOnes(
 	return (UKFMO_OK);
 }
 
+/*-------------------------------------------------------------------------*//**
+ * @author    Mickle Isaev
+ * @date      09-сен-2019
+ *
+ * @brief    Функция делает матрицу единичной (диагональ матрицы содержит
+ *           единицы, все остальные элементы - нули)
+ *
+ * @param[in, out] 	*pSrc_s: 	Указатель на структуру матрицы, которую
+ * 								необходимо сделать единичной
+ *
+ * @return  Статус операции
+ *                 @see ukfmo_fnc_status_e
+ */
 ukfmo_fnc_status_e
 UKFMO_MatrixIdentity(
 #if defined(__UKFMO_USE_ARM_MATH__)
@@ -654,6 +704,21 @@ UKFMO_MatrixTranspose(
 	return (status_e);
 }
 
+/*-------------------------------------------------------------------------*//**
+ * @author    Mickle Isaev
+ * @date      09-сен-2019
+ *
+ * @brief    Функция находит обратную матрицу от исходной
+ *
+ * @param[in]  	*pSrc_s: 	Указатель на структуру матриц, от которой необходимо
+ * 							найти инверсную матрицу
+ * @param[out] 	*pDst_s: 	Указатель на структуру матрицы, в которую будет
+ * 							записана инверсная матрица от матрицы, расположенной
+ * 							в "pSrc_s"
+ *
+ * @return  Статус операции
+ *           @see ukfmo_fnc_status_e
+ */
 __UKFMO_FORCE_INLINE ukfmo_fnc_status_e __UKFMO_FNC_OPTIMIZE_MODE
 UKFMO_MatrixInverse(
 #if defined(__UKFMO_USE_ARM_MATH__)
@@ -757,16 +822,11 @@ UKFMO_MatrixInverse(
  * @author    Mickle Isaev
  * @date      22-апр-2019
  *
- * @brief   Функция выполняет разложение Холецкого квадратной матрицы
- * @param[in]   *pSrcMatrix:    Указатель на нулевой элемент массива (двумерной
- *                              квадратной матрицы), разложение которой необходимо
- *                              выполнить
- * @param[out]  *pDstMatrix:    Указатель на нулевой элемент массива (двумерной
- *                              квадратной матрицы) в который будет записан
- *                              результат разложения Холецкого
- * @param[in]   rowOrColumnNumb:    Количество строк или столбцов квадратной
- *                                  матрицы, разложение которой необходимо
- *                                  выполнить
+ * @brief   Функция выполняет нижнее разложение Холецкого квадратной матрицы
+ * @param[in,out]  *pSrc_s: Указатель на структуру матрицы, разложение
+ * 							Холецкого которой необходимо выполнить.
+ * 					@note 	В область памяти исходной матрицы будет записан
+ * 					      	результат разложения Холецкого
  * @return  None
  */
 __UKFMO_FORCE_INLINE ukfmo_fnc_status_e __UKFMO_FNC_OPTIMIZE_MODE

@@ -428,24 +428,49 @@ UKFMO_GetCholeskyLow(
 #define __UKFMO_CheckMatrixStructValidationGeneric(x, rowMaw, colMax) \
 	while(__UKFMO_IsMatrixStructValid((x), (rowMaw), (colMax)) != 1u){ __UKFMO_ALL_INTERRUPTS_DIS();}
 
-/*-------------------------------------------------------------------------*//**
- * @author    Mickle Isaev
- * @date      22-авг-2019
- *
- * @brief    Макрос зацикливает программу в случае неверных параметров
- *           структуры матрицы
- *
- * @param[in] 	x: 	Указатель на структуру матрицы
- *
- * @return None
- */
+
 #if !defined (__UKFMO_CheckMatrixStructValidation)
+
+	/*-------------------------------------------------------------------------*//**
+	* @author    Mickle Isaev
+	* @date      22-авг-2019
+	*
+	* @brief    Макрос зацикливает программу в случае неверных параметров
+	*           структуры матрицы
+	*
+	* @param[in] 	x: 	Указатель на структуру матрицы
+	*
+	* @return None
+	*/
 	#define __UKFMO_CheckMatrixStructValidation(x) __UKFMO_CheckMatrixStructValidationGeneric((x), (UINT16_MAX), (UINT16_MAX))
 #endif
 
+/*-------------------------------------------------------------------------*//**
+ * @author    Mickle Isaev
+ * @date      09-сен-2019
+ *
+ * @brief    Макрос выполняет проверку на совпадение адресов памяти двух матриц
+ *
+ * @param[in]   mat1: 	Указатель на область памяти матрицы 1
+ * @param[in] 	mat2:   Указатель на область памяти матрицы 2
+ *
+ * @return  	возвращает 1, если адреса различаются
+ */
 #define __UKFMO_IsMatAddrDiff(mat1, mat2)	\
 	((mat1->pData != mat2->pData) == 1u)
 
+/*-------------------------------------------------------------------------*//**
+ * @author    Mickle Isaev
+ * @date      09-сен-2019
+ *
+ * @brief     Макрос зацикливает программу в случае совпадения областей памяти 
+ *            в которых хранятся матрицы
+ *
+ * @param    mat1    Матрица 1
+ * @param    mat2    Матрица 2
+ *
+ * @return   None
+ */
 #define __UKFMO_CheckMatAddrDiff(mat1, mat2) \
 	while((__UKFMO_IsMatAddrDiff((mat1), (mat2)) != 1u)) {__UKFMO_ALL_INTERRUPTS_DIS(); }
 
@@ -532,6 +557,22 @@ UKFMO_GetCholeskyLow(
 #define __UKFMO_CheckMatrixSize(pMatrix_s, sizeofArr) \
 	while ((__UKFMO_GetCellNumb((pMatrix_s)) * sizeof(__UKFMO_FPT__)) != (sizeofArr)) {__UKFMO_ALL_INTERRUPTS_DIS();}
 
+/*-------------------------------------------------------------------------*//**
+ * @author    Mickle Isaev
+ * @date      09-сен-2019
+ *
+ * @brief    Макрос выполняет проверку статуса матричной операции, в случае
+ *           неудачи, зацикливает программу.
+ * @warninng 		Макрос не зацикливает программу, если обнаружены
+ *             		следующие ошибки:
+ *             		- UKFMO_SINGULAR
+ *             		- UKFMO_NOT_POS_DEFINED
+ *
+ * @param[in] 	status: Статус матричной операции
+ * 						@see ukfmo_fnc_status_e
+ *
+ * @return   None
+ */
 #define __UKFMO_CheckMatrixOperationStatus(status) \
 	if(status != UKFMO_OK) \
 	{\
@@ -545,12 +586,37 @@ UKFMO_GetCholeskyLow(
 		} \
 	}
 
+/*-------------------------------------------------------------------------*//**
+ * @author    Mickle Isaev
+ * @date      09-сен-2019
+ *
+ * @brief    Макрос зацикливает программу, если обнаружена ошибка
+ *           сингулярности матрицы
+ *
+ * @param[in] 	status: Статус матричной операции
+ * 						@see ukfmo_fnc_status_e
+ *
+ * @return   None
+ */
 #define __UKFMO_CheckMatrixSingularity(status)		\
 	if((status == UKFMO_SINGULAR)) {__UKFMO_ALL_INTERRUPTS_DIS(); while(1);}
 
+/*-------------------------------------------------------------------------*//**
+ * @author    Mickle Isaev
+ * @date      09-сен-2019
+ *
+ * @brief    Макрос зацикливает программу, если обнаружена
+ *           ошибка "UKFMO_NOT_POS_DEFINED"
+ *
+ * @param[in] 	status: Статус матричной операции
+ * 						@see ukfmo_fnc_status_e
+ *
+ * @return   None
+ */
 #define __UKFMO_CheckMatrixPosDefine(status) \
 	if((status == UKFMO_NOT_POS_DEFINED)) {__UKFMO_ALL_INTERRUPTS_DIS(); while(1);}
 #else
+
 #define __UKFMO_CheckMatrixSize(pMatrix_s, sizeofArr)
 #define __UKFMO_CheckMatrixOperationStatus(status)
 #define __UKFMO_CheckMatrixSingularity(status)
