@@ -426,7 +426,7 @@ UKFMO_GetCholeskyLow(
  * @return None
  */
 #define __UKFMO_CheckMatrixStructValidationGeneric(x, rowMaw, colMax) \
-	while(__UKFMO_IsMatrixStructValid((x), (rowMaw), (colMax)) != 1u){ __UKFMO_ALL_INTERRUPTS_DIS();}
+	if (__UKFMO_IsMatrixStructValid((x), (rowMaw), (colMax)) != 1u) { __UKFMO_ALL_INTERRUPTS_DIS(); while(1);}
 
 
 #if !defined (__UKFMO_CheckMatrixStructValidation)
@@ -472,7 +472,7 @@ UKFMO_GetCholeskyLow(
  * @return   None
  */
 #define __UKFMO_CheckMatAddrDiff(mat1, mat2) \
-	while((__UKFMO_IsMatAddrDiff((mat1), (mat2)) != 1u)) {__UKFMO_ALL_INTERRUPTS_DIS(); }
+	if(__UKFMO_IsMatAddrDiff((mat1), (mat2)) != 1u) {__UKFMO_ALL_INTERRUPTS_DIS(); while(1);}
 
 #else
 #define __UKFMO_CheckMatrixStructValidationGeneric(x, rowMaw, colMax)
