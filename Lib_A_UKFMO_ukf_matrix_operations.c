@@ -89,10 +89,13 @@ UKFMO_MatrixInit(
  *
  * @brief    Функция выполняет копирование параметров матрицы
  *
- * @param[out]    pDst_s                     Пункт назначения
- * @param[in]   pSrc_s                     Источники
+ * @param[out] 	*pDst_s:	Указатель на структуру матрицы, в которую 
+ * 							необходимо записать копию параметров матрицы
+ * @param[in]   *pSrc_s:	Указатель на структуру матрицы, копирование 
+ * 							параметров которой необходимо выполнить
  *
- * @return    { description_of_the_return_value }
+ * @return  Статус операции
+ *                @see ukfmo_fnc_status_e
  */
 ukfmo_fnc_status_e
 UKFMO_CopyParams(
@@ -308,19 +311,17 @@ UKFMO_MatrixIdentity(
 }
 
 /*-------------------------------------------------------------------------*//**
-* @author    Mickle Isaev
-* @date      22-апр-2019
-*
-* @brief    Функция находит инверсную матрицу
-*
-* @param[in]   *pSrc_s:  Указатель на структуру матрицы от которой
-*                        необходимо найти инверсную матрицу
-* @param[out]  *pDst_s:  Указатель на структуру матрицы, в которую будет
-*                        записана инверсная матрица
-*
-* @return  Статус операции
-*                 @see ukfmo_fnc_status_e
-*/
+ * @author    Mickle Isaev
+ * @date      09-сен-2019
+ *
+ * @brief    Функция заполняет все элементы матрицы нулями
+ *
+ * @param[in, out] 	*pSrc_s: 	Указатель на структуру матрицы, которую
+ * 								необходимо заполнить нулями
+ *
+ * @return  Статус операции
+ *                 @see ukfmo_fnc_status_e
+ */
 ukfmo_fnc_status_e
 UKFMO_MatrixZeros(
 #if defined(__UKFMO_USE_ARM_MATH__)
