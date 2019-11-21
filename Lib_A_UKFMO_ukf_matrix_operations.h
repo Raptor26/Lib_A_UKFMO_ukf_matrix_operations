@@ -463,7 +463,7 @@ UKFMO_GetCholeskyLow(
  * @author    Mickle Isaev
  * @date      09-сен-2019
  *
- * @brief     Макрос зацикливает программу в случае совпадения областей памяти 
+ * @brief     Макрос зацикливает программу в случае совпадения областей памяти
  *            в которых хранятся матрицы
  *
  * @param    mat1    Матрица 1
@@ -622,6 +622,57 @@ UKFMO_GetCholeskyLow(
 #define __UKFMO_CheckMatrixSingularity(status)
 #define __UKFMO_CheckMatrixPosDefine(status)
 #endif
+
+/*-------------------------------------------------------------------------*//**
+ * @author    Mickle Isaev
+ * @date      21-ноя-2019
+ *
+ * @brief   Макрос выполняет инициализацию двумерной матрицы и проверяет
+ * 			размерность матрицы на размерность выделенной под эту матрицу области
+ * 			памяти.
+ * 			@warning 	Макрос войдет в бесконечный цикл если количество строк и
+ * 						столбцов не совпадает с размерностью области памяти, которая
+ * 						выделена под эту матрицу. Т.е. Если (rowNumb * colNumb != sizeof(pMem_a2) / sizeof(pMem_a2[0][0]))
+ *
+ * @param[out] 	pMat_s:  	Указатель на структуру матрицы
+ * @param[in]   rowNumb:    Количество строк матрицы
+ * @param[in]   colNumb:    Количество столбцов матрицы
+ * @param[in]   pMem_a2:   	Область памяти, в которой будут расположены
+ * 							ячейки матрицы
+ * @return None
+ *
+ * {@code
+ * 		int main (void)
+ * 		{
+ * 			double memForMatrix_a2[3][7];
+ * 			ukfmo_matrix_s matrix_s;
+ * 			__UKFMO_MatrixInit(
+ * 				(&matrix_s), 		// Указатель на структуру матрицы (необходимо использовать скобки)
+ * 				3u, 				// Количество строк
+ * 				7u, 				// Количество столбцов
+ *
+ * 				memForMatrix_a2);	// Указатель на начало двумерного массива, в котором
+ * 									// будут расположены ячейки матрицы.
+ * 									// @note указатель на двумерный массив нужно передавать как в примере, иначе
+ * 									// проверка на размерность с помощью оператора sizeof не будет пройдена.
+ * 									// @warning не нужно использовать &memForMatrix_a2[0][0].
+ * 		}
+ *
+ * }
+ */
+#define __UKFMO_MatrixInit(pMat_s, rowNumb, colNumb, pMem_a2)		\
+do{																	\
+	ukfmo_matrix_s *pMatTmp_s = (pMat_s);							\
+	pMatTmp_s->numCols 	= (colNumb);								\
+	pMatTmp_s->numRows 	= (rowNumb);								\
+	pMatTmp_s->pData 	= (__UKFMO_FPT__*) pMem_a2;					\
+	if(__UKFMO_GetCellNumb(pMatTmp_s) != 							\
+		(sizeof(pMem_a2) / sizeof(pMem_a2[0u][0u])))				\
+	{																\
+		__UKFMO_ALL_INTERRUPTS_DIS();								\
+		while(1);													\
+	}																\
+}while(0u)															\
 /*#### |End  | <-- Секция - "Определение макросов" ###########################*/
 
 #endif  /* LIB_A_UKFMO_UKF_MATRIX_OPERATIONS_H_ */
