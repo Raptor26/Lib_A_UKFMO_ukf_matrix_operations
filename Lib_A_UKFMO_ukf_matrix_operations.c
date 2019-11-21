@@ -89,9 +89,9 @@ UKFMO_MatrixInit(
  *
  * @brief    Функция выполняет копирование параметров матрицы
  *
- * @param[out] 	*pDst_s:	Указатель на структуру матрицы, в которую 
+ * @param[out] 	*pDst_s:	Указатель на структуру матрицы, в которую
  * 							необходимо записать копию параметров матрицы
- * @param[in]   *pSrc_s:	Указатель на структуру матрицы, копирование 
+ * @param[in]   *pSrc_s:	Указатель на структуру матрицы, копирование
  * 							параметров которой необходимо выполнить
  *
  * @return  Статус операции
@@ -696,7 +696,7 @@ UKFMO_MatrixTranspose(
 	{
 		for (col = 0; col < nColDstL; col++)
 		{
-			pDstL[nColDstL * row + col] = pSrcL[nColSrcL * col + row];
+			pDstL[nRowSrcL * row + col] = pSrcL[nColSrcL * col + row];
 		}
 	}
 
@@ -713,6 +713,8 @@ UKFMO_MatrixTranspose(
  *
  * @param[in]  	*pSrc_s: 	Указатель на структуру матриц, от которой необходимо
  * 							найти инверсную матрицу
+ * 							@warning 	При взятии обратной матрицы, то, что находится
+ * 										по адресу *pSrc_s становится не валидным
  * @param[out] 	*pDst_s: 	Указатель на структуру матрицы, в которую будет
  * 							записана инверсная матрица от матрицы, расположенной
  * 							в "pSrc_s"
@@ -884,10 +886,12 @@ UKFMO_GetCholeskyLow(
 			pSrcL[ncol * row + col] = (row == col) ? __UKFMO_sqrt(sum) : (row > col) ? (sum / pSrcL[ncol * col + col]) : 0;
 
 
+			#if defined (__UKFMO_CHEKING_ENABLE__)
 			if ((row == col) && (sum <= 0))
 			{
 				status_e = UKFMO_NOT_POS_DEFINED;
 			}
+			#endif
 		}
 	}
 
