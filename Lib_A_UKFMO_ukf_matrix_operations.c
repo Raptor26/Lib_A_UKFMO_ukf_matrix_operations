@@ -176,14 +176,16 @@ UKFMO_CopyMatrix(
 	}
 	#endif
 
+
+	__UKFMO_FPT__ const * const pSrcL   = (__UKFMO_FPT__ *)pSrc_s->pData;
+	__UKFMO_FPT__ * const pDstL         = (__UKFMO_FPT__ *)pDst_s->pData;
+
 	/* Копирование матрицы из одной области памяти в другую */
-	size_t i;
-	for (
-		i = 0u;
-		i < (pDst_s->numRows * pDst_s->numCols);
-		i++)
+	size_t arrCellNumb = pDst_s->numRows * pDst_s->numCols;
+	while (arrCellNumb != 0u)
 	{
-		pDst_s->pData[i] = pSrc_s->pData[i];
+		arrCellNumb--;
+		pDstL[arrCellNumb] = pSrcL[arrCellNumb];
 	}
 
 	return (UKFMO_OK);
