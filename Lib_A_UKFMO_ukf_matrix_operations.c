@@ -89,9 +89,9 @@ UKFMO_MatrixInit(
  *
  * @brief    Функция выполняет копирование параметров матрицы
  *
- * @param[out] 	*pDst_s:	Указатель на структуру матрицы, в которую 
+ * @param[out] 	*pDst_s:	Указатель на структуру матрицы, в которую
  * 							необходимо записать копию параметров матрицы
- * @param[in]   *pSrc_s:	Указатель на структуру матрицы, копирование 
+ * @param[in]   *pSrc_s:	Указатель на структуру матрицы, копирование
  * 							параметров которой необходимо выполнить
  *
  * @return  Статус операции
@@ -176,14 +176,16 @@ UKFMO_CopyMatrix(
 	}
 	#endif
 
+
+	__UKFMO_FPT__ const * const pSrcL   = (__UKFMO_FPT__ *)pSrc_s->pData;
+	__UKFMO_FPT__ * const pDstL         = (__UKFMO_FPT__ *)pDst_s->pData;
+
 	/* Копирование матрицы из одной области памяти в другую */
-	size_t i;
-	for (
-		i = 0u;
-		i < (pDst_s->numRows * pDst_s->numCols);
-		i++)
+	size_t arrCellNumb = pDst_s->numRows * pDst_s->numCols;
+	while (arrCellNumb != 0u)
 	{
-		pDst_s->pData[i] = pSrc_s->pData[i];
+		arrCellNumb--;
+		pDstL[arrCellNumb] = pSrcL[arrCellNumb];
 	}
 
 	return (UKFMO_OK);
@@ -696,7 +698,7 @@ UKFMO_MatrixTranspose(
 	{
 		for (col = 0; col < nColDstL; col++)
 		{
-			pDstL[nColDstL * row + col] = pSrcL[nColSrcL * col + row];
+			pDstL[nRowSrcL * row + col] = pSrcL[nColSrcL * col + row];
 		}
 	}
 
@@ -713,6 +715,8 @@ UKFMO_MatrixTranspose(
  *
  * @param[in]  	*pSrc_s: 	Указатель на структуру матриц, от которой необходимо
  * 							найти инверсную матрицу
+ * 							@warning 	При взятии обратной матрицы, то, что находится
+ * 										по адресу *pSrc_s становится не валидным
  * @param[out] 	*pDst_s: 	Указатель на структуру матрицы, в которую будет
  * 							записана инверсная матрица от матрицы, расположенной
  * 							в "pSrc_s"
@@ -884,10 +888,12 @@ UKFMO_GetCholeskyLow(
 			pSrcL[ncol * row + col] = (row == col) ? __UKFMO_sqrt(sum) : (row > col) ? (sum / pSrcL[ncol * col + col]) : 0;
 
 
+			#if defined (__UKFMO_CHEKING_ENABLE__)
 			if ((row == col) && (sum <= 0))
 			{
 				status_e = UKFMO_NOT_POS_DEFINED;
 			}
+			#endif
 		}
 	}
 
